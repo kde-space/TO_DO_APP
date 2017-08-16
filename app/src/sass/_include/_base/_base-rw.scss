@@ -1,0 +1,46 @@
+@charset 'utf-8';
+
+@import '../_setting/setting';
+
+// base-reponsive
+//////////////////////////////////////
+html {
+	width: 100%;
+	height: 100%;
+	font-size: 62.5%; //10px
+}
+
+body {
+	width: 100%;
+	height: 100%;
+	line-height: 2;
+	color: $color-base;
+	font-family: $font-family;
+	@include fz($font-size-base);
+
+	// [mediaQuery]---------
+	@include mq-small {
+		line-height: 1.86;
+	}
+}
+
+a {
+	@include linkColor($color-link);
+	text-decoration: none;
+	&:hover {
+		text-decoration: underline;
+	}
+}
+
+#l-wrapper {
+	max-width: 100%;
+	min-width: 320px;
+	margin: 0 auto;
+	overflow: hidden;
+}
+
+#l-wrapper img {
+	display: block;
+	max-width: 100%;
+	height: auto;
+}
