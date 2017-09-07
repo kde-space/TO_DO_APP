@@ -1,112 +1,82 @@
+/**
+ * TO DO アプリ
+ */
 import "babel-polyfill";
 
-/**
- * picture要素をie9でも使えるようにするポリフィル
- */
-import picuturefill from './_lib/_picturefill';
+const TO_DO_APP = {
+	init() {
+		this.stage = document.getElementById('stage');
 
-picuturefill();
+		/**
+		 * 初期表示テキスト
+		 * @param {String} str メッセージ
+		 */
+		const showMessage = (str) => {
+			const div = document.createElement('div');
+			div.textContent = str;
+			this.stage.appendChild(div);
+		};
 
-/**
- * テキストからページ遷移
- */
-import LocationChangeFromTxt from './_module/_LocationChangeFromTxt';
+		/**
+		 * フォームの表示
+		 */
+		const showForm = () => {
+			const div = document.createElement('div');
+			div.className = 'addTaskForm';
+			div.innerHTML = `
+				<form name="addTask">
+					内容：<input type="text" name="content">
+					優先度：<lebel><input type="radio" name="priority" value="high">高</label>
+							<lebel><input type="radio" name="priority" value="normal">中</label>
+							<lebel><input type="radio" name="priority" value="low">低</label>
+					期限：<input type="date" name="limit">
+					<input type="submit" value="追加">
+					<input type="reset" value="クリア">
+				</form>
+			`;
+			this.stage.appendChild(div);
+		};
 
-const locationChangeFromTxt = new LocationChangeFromTxt();
-locationChangeFromTxt.init();
-
-/**
- * スムーススクロール
- */
-import SmScroll from './_module/_SmScroll';
-
-const smScroll = new SmScroll();
-smScroll.init();
-
-
-const NONBAL_PROVJECT = NONBAL_PROVJECT || {};
-NONBAL_PROVJECT.COMMON = {};
-
-(function($){
-	NONBAL_PROVJECT.COMMON.TOGGLE_SHOW_GNAV = function() {
-		let stateOpen    = false;
-		const $window      = $(window);
-		const $body        = $('body');
-		const $gNav        = $('#js-gNav');
-		const $trigger     = $('#js-gNav-trigger');
-		const $bg          = $('#js-gNav-bg');
-		const BREAK_POINT  = 1000;
-		const CLASS_ACTIVE = 'js-active';
-
-		const checkResize = function() {
-			$window.on('resize.gNav', function() {
-				if (stateOpen && window.innerWidth > BREAK_POINT) {
-					changeClass();
-				}
+		/**
+		 * フォームのイベント設定
+		 */
+		const addFormEvent = () => {
+			const addTaskForm = document.forms.addTask;
+			addTaskForm.addEventListener('submit', (e) => {
+				e.preventDefault();
+				const task = [
+					addTaskForm.content.value,
+					addTaskForm.priority.value,
+					addTaskForm.limit.value
+				];
+				this.createTask(task, this.stage);
+				addTaskForm.reset();
 			});
 		};
 
-		const changeClass = function() {
-			if (stateOpen) {
-				stateOpen = false;
-				$gNav.removeClass(CLASS_ACTIVE);
-				$trigger.removeClass(CLASS_ACTIVE);
-				$bg.removeClass(CLASS_ACTIVE);
-				$window.off('resize.gNav');
-			} else {
-				stateOpen = true;
-				$gNav.addClass(CLASS_ACTIVE);
-				$trigger.addClass(CLASS_ACTIVE);
-				$bg.addClass(CLASS_ACTIVE);
-				checkResize();
+		showMessage('タスクを入力しましょう');
+		showForm();
+		addFormEvent();
+	},
+
+	/**
+	 * タスクインスタンスの作成
+	 * @param {Array} ary タスクのプロパティ
+	 * @param {Node} stage 挿入先となる要素
+	 */
+	createTask(ary, stage) {
+		class Task {
+			constructor(ary) {
+				this.element = document.createElement('div');
+				this.element.textContent = ary[0];
+				this.element.priority = ary[1];
+				this.element.limit = ary[2];
+				stage.appendChild(this.element);
 			}
-		};
+		}
+		const task = new Task(ary);
+	}
+};
 
-		const init = function() {
-			$trigger.on('click', function() {
-				changeClass();
-			});
-			$bg.on('click', function() {
-				changeClass();
-			});
-		};
+TO_DO_APP.init();
 
-		init();
-	};
-
-	// NONBAL_PROVJECT.COMMON.SMOOTH_SCROLL = function(options) {
-	// 	var selector  = '',
-	// 		hrefData  = '',
-	// 		targetPos = 0,
-	// 		targetObj = '';
-
-	// 	var defaults = {
-	// 		easing      : 'swing',
-	// 		duration    : 400,
-	// 		positioning : 0,
-	// 		callback    : function () {}
-	// 	};
-	// 	var setting = $.extend(defaults, options);
-
-	// 	if (navigator.userAgent.match(/webkit/i)) {
-	// 		targetObj = 'body';
-	// 	} else {
-	// 		targetObj = 'html';
-	// 	}
-	// 	$(setting.selector).on('click', function (event) {
-	// 		hrefData = $(this).attr('href');
-	// 		if (hrefData.indexOf('#') !== 0 || $(hrefData).length === 0) { return; }
-	// 		event.preventDefault();
-	// 		targetPos = $(hrefData).offset().top + setting.positioning;
-	// 		$(targetObj).animate({
-	// 			scrollTop : targetPos
-	// 		}, setting.duration, setting.easing, setting.callback);
-	// 	});
-	// };
-
-	// NONBAL_PROVJECT.COMMON.TOGGLE_SHOW_GNAV();
-	// NONBAL_PROVJECT.COMMON.SMOOTH_SCROLL({
-	// 	selector: '.js-smoothScroll',
-	// 	positioning: -60
-	// });
-})(jQuery);
