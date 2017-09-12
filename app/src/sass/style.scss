@@ -1,5 +1,4 @@
 @charset 'utf-8';
-
 //setting file
 //////////////////////////////
 @import '_include/_setting/setting';
@@ -12,6 +11,7 @@
 * base
 *
 * //////////////////////////*/
+
 @import "_include/_base/reset";
 @import "_include/_base/base-rw";
 
@@ -20,6 +20,7 @@
 * layout
 *
 * //////////////////////////*/
+
 @import "_include/_layout/layout";
 
 /*////////////////////////////
@@ -27,6 +28,7 @@
 * utility
 *
 * //////////////////////////*/
+
 @import "_include/_tool/utility";
 
 /*////////////////////////////
@@ -35,5 +37,10 @@
 *
 * //////////////////////////*/
 
-/* m-gHeader
-* ------------------------ */
+.statusBox {
+	position: fixed;
+	right: 10px;
+	top: 10px;
+	padding: 20px;
+	border: 1px solid;
+}

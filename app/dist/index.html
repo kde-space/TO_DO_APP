@@ -13,9 +13,34 @@
 <div id="l-wrapper">
 <header class="m-gHeader">
 	<h1>TO DO APP</h1>
-<!-- /.m-gHeader -->
-</header>
+</header><!-- /.m-gHeader -->
+
 <div id="stage"></div>
+
+<form name="taskForm" id="js-taskForm">
+	<ul>
+		<li>内容： <input type="text" name="content" required></li>
+		<li>優先度： <lebel><input type="radio" name="priority" value="high" required>高</label>
+			<lebel><input type="radio" name="priority" value="normal">中</label>
+			<lebel><input type="radio" name="priority" value="low">低</label></li>
+		<li>期限： <input type="date" name="limit"></li>
+	</ul>
+	<ul>
+		<input type="submit" value="追加">
+		<input type="reset" value="クリア">
+	</ul>
+</form><!-- /.taskForm -->
+
+<div class="statusBox" id="js-statusBox">
+	<ul>
+		<li>現在のタスク総数： <span class="totalCount">-</span> 個</li>
+		<li>残タスク数： <span class="leftCount">-</span> 個</li>
+		<li>完了済みタスク数： <span class="complateCount">-</span> 個</li>
+		<li>完遂率： <span class="completionRate">-</span> ％</li>
+	</ul>
+</div>
+
+
 </div><!-- /#l-wrapper -->
 <script src="/js/app.min.js"></script>
 </body>

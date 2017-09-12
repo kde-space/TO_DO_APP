@@ -3,80 +3,62 @@
  */
 import "babel-polyfill";
 
-const TO_DO_APP = {
-	init() {
-		this.stage = document.getElementById('stage');
+const TO_DO_APP = () => {
+	const stage = document.getElementById('stage');
 
-		/**
-		 * 初期表示テキスト
-		 * @param {String} str メッセージ
-		 */
-		const showMessage = (str) => {
-			const div = document.createElement('div');
-			div.textContent = str;
-			this.stage.appendChild(div);
-		};
-
-		/**
-		 * フォームの表示
-		 */
-		const showForm = () => {
-			const div = document.createElement('div');
-			div.className = 'addTaskForm';
-			div.innerHTML = `
-				<form name="addTask">
-					内容：<input type="text" name="content">
-					優先度：<lebel><input type="radio" name="priority" value="high">高</label>
-							<lebel><input type="radio" name="priority" value="normal">中</label>
-							<lebel><input type="radio" name="priority" value="low">低</label>
-					期限：<input type="date" name="limit">
-					<input type="submit" value="追加">
-					<input type="reset" value="クリア">
-				</form>
-			`;
-			this.stage.appendChild(div);
-		};
-
-		/**
-		 * フォームのイベント設定
-		 */
-		const addFormEvent = () => {
-			const addTaskForm = document.forms.addTask;
-			addTaskForm.addEventListener('submit', (e) => {
-				e.preventDefault();
-				const task = [
-					addTaskForm.content.value,
-					addTaskForm.priority.value,
-					addTaskForm.limit.value
-				];
-				this.createTask(task, this.stage);
-				addTaskForm.reset();
-			});
-		};
-
-		showMessage('タスクを入力しましょう');
-		showForm();
-		addFormEvent();
-	},
+	const model = {
+		dispatcher: document.createElement('div'),
+		ev: new Event('dataChange'),
+		_stateAll: [],
+		setItem(item) {
+			this._stateAll.push(item);
+			this.dispatcher.dispatchEvent(this.ev);
+		},
+		getItem() {
+			return this._stateAll;
+		}
+	};
 
 	/**
-	 * タスクインスタンスの作成
-	 * @param {Array} ary タスクのプロパティ
-	 * @param {Node} stage 挿入先となる要素
+	 * フォームのイベント設定
 	 */
-	createTask(ary, stage) {
-		class Task {
-			constructor(ary) {
-				this.element = document.createElement('div');
-				this.element.textContent = ary[0];
-				this.element.priority = ary[1];
-				this.element.limit = ary[2];
-				stage.appendChild(this.element);
-			}
+	const addFormEvent = () => {
+		const form = document.forms['js-taskForm'];
+		form.addEventListener('submit', (e) => {
+			e.preventDefault();
+			const task = {
+				content: form.content.value,
+				priority: form.priority.value,
+				limit: form.limit.value
+			};
+			model.setItem(task);
+			form.reset();
+		});
+	};
+
+	/**
+	 * 画面の描画
+	 */
+	const render = () => {
+		const dataAll = model.getItem();
+		const ul = document.createElement('ul');
+		let html = '';
+		dataAll.forEach((v) => {
+			html += `<li>${v.content}<strong>優先度</strong>${v.priority}<strong>リミット</strong>${v.limit}</li>`;
+		});
+		ul.innerHTML = html;
+		while (stage.firstChild) {
+			stage.removeChild(stage.firstChild);
 		}
-		const task = new Task(ary);
-	}
+		stage.appendChild(ul);
+	};
+
+	// カスタムイベントのリスナー登録
+	model.dispatcher.addEventListener('dataChange', render);
+
+	// フォームボタンのイベント登録
+	addFormEvent();
 };
 
-TO_DO_APP.init();
+TO_DO_APP();
 

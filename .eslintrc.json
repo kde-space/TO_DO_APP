@@ -19,6 +19,7 @@
         "no-tabs": "off",
         "comma-dangle": ["error", "never"],
         "strict": "error",
-        "import/first": "off"
+        "import/first": "off",
+        "no-underscore-dangle": "off"
     }
 }
