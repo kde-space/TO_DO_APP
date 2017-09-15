@@ -87,38 +87,48 @@ const TO_DO_APP = () => {
 		 * ステータスの描画
 		 */
 		const renderStatus = () => {
-			class DataStatus {
-				constructor() {
-					this.dataAll = dataAll;
-					this.totalCount = this.dataAll.length;
+			// 各値をまとめたオブジェクト
+			const statusData = {
+				init() {
+					// タスク総数
+					this.totalCount = dataAll.length;
+					// 残タスク数
+					this.leftCount = (() => {
+						let result = 0;
+						dataAll.forEach((value) => {
+							if (value.status === 'open') {
+								result += 1;
+							}
+						});
+						return result;
+					})();
+					// 完了済みタスク数
+					this.complateCount = this.totalCount - this.leftCount;
+					// タスク完遂率
+					this.completionRate = (this.complateCount / this.totalCount) * 100;
 				}
-				complateCount() {
-					return this.totalCount - this.leftCount();
-				}
-				leftCount() {
-					let result = 0;
-					this.dataAll.forEach((value) => {
-						if (value.status === 'open') {
-							result += 1;
-						}
-					});
-					return result;
-				}
-				completionRate() {
-					return (this.complateCount() / this.totalCount) * 100;
-				}
-			}
-			const dataStatus = new DataStatus(dataAll);
+			};
+			statusData.init();
 
-			const container = document.getElementById('js-statusBox');
-			// タスク総数
-			container.querySelector('.totalCount').textContent = dataStatus.totalCount;
-			// 残タスク数
-			container.querySelector('.leftCount').textContent = dataStatus.leftCount();
-			// 完了済み
-			container.querySelector('.leftCount').textContent = dataStatus.complateCount();
-			// 完遂率
-			container.querySelector('.completionRate').textContent = dataStatus.completionRate();
+			/**
+			 * 各要素の任意のプロパティに、対象オブジェクトの同名のプロパティの値を設定
+			 * @param {Node} containerNode 要素をまとめる親ノード
+			 * @param {Array<string>} childNodeSelectors 対象となる要素のセレクタ
+			 * @param {String} prop 変更する要素のプロパティ
+			 * @param {Object} status 変更する要素へ設定する値がまとまっているオブジェクト
+			 */
+			const setValueSameNameProp = (containerNode, childNodeSelectors, prop, status) => {
+				childNodeSelectors.forEach((childSelector) => {
+					containerNode.querySelector(childSelector)[prop] = status[childSelector.slice(1)];
+				});
+			};
+
+			setValueSameNameProp(
+				document.getElementById('js-statusBox'),
+				['.totalCount', '.leftCount', '.complateCount', '.completionRate'],
+				'textContent',
+				statusData
+			);
 		};
 
 		renderTask();
