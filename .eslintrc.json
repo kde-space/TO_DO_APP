@@ -21,6 +21,7 @@
         "strict": "error",
         "import/first": "off",
         "no-underscore-dangle": "off",
-        "arrow-parens": ["error", "always"]
+        "arrow-parens": ["error", "always"],
+        "no-param-reassign": ["error", { "props": false }]
     }
 }
