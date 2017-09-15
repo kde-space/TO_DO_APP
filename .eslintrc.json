@@ -20,6 +20,7 @@
         "comma-dangle": ["error", "never"],
         "strict": "error",
         "import/first": "off",
-        "no-underscore-dangle": "off"
+        "no-underscore-dangle": "off",
+        "arrow-parens": ["error", "always"]
     }
 }
