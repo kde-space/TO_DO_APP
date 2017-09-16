@@ -37,6 +37,10 @@
 *
 * //////////////////////////*/
 
+.js-none {
+	display: none !important;
+}
+
 .statusBox {
 	position: fixed;
 	right: 10px;
@@ -49,4 +53,23 @@
 	width: 500px;
 	padding: 10px;
 	border: 1px solid;
+	border-radius: 3px;
+
+	&.is-high {
+		background-color: #FFCECE;
+	}
+	&.is-low {
+		background-color: #D2FFD6
+	}
+	&.is-complete {
+		background-color: #ccc;
+	}
+}
+
+.taskStatus {
+	display: flex;
+
+	dl, ul {
+		display: flex;
+	}
 }

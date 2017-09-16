@@ -10,18 +10,33 @@ const TO_DO_APP = () => {
 	const model = {
 		dispatcher: document.createElement('div'),
 		ev: new Event('dataChange'),
+		// ステート（直接外部からは参照できない）
 		_stateAll: [],
-		setItem(item) {
-			this._stateAll.push(item);
+
+		/**
+		 * ステートへの保存
+		 * @param {String} type
+		 * @param {*} arg
+		 */
+		setItem(type, arg) {
+			if (type === 'add') {
+				this._stateAll.push(arg);
+			} else if (type === 'changeStatus') {
+				this._stateAll[arg[0]].status = arg[1] ? 'complete' : 'open';
+			}
 			this.dispatcher.dispatchEvent(this.ev);
 		},
+
+		/**
+		 * ステートの取得
+		 */
 		getItem() {
 			return this._stateAll;
 		}
 	};
 
 	/**
-	 * フォームのイベント設定
+	 * フォームのイベント登録
 	 */
 	const addFormEvent = () => {
 		const form = document.forms['js-taskForm'];
@@ -33,7 +48,7 @@ const TO_DO_APP = () => {
 				limit: form.limit.value,
 				status: 'open'
 			};
-			model.setItem(task);
+			model.setItem('add', task);
 			form.reset();
 		});
 	};
@@ -48,98 +63,152 @@ const TO_DO_APP = () => {
 		}
 	};
 
+	// 全データから各値をまとめたオブジェクト
+	const statusData = {
+		init() {
+			// 全データ
+			const dataAll = model.getItem();
+			// タスク総数
+			this.totalCount = dataAll.length;
+			// 残タスク数
+			this.leftCount = (() => {
+				let result = 0;
+				dataAll.forEach((value) => {
+					if (value.status === 'open') {
+						result += 1;
+					}
+				});
+				return result;
+			})();
+			// 完了済みタスク数
+			this.completeCount = this.totalCount - this.leftCount;
+			// タスク完遂率
+			this.completionRate = Math.floor((this.completeCount / this.totalCount) * 100);
+		}
+	};
+
+	/**
+	 * 優先度を示すテキスト取得
+	 */
+	const getPriorityStr = (hoge) => {
+		let str = '';
+		switch (hoge) {
+		case 'high':
+			str = '高';
+			break;
+		case 'low':
+			str = '低';
+			break;
+		default:
+			str = '中';
+			break;
+		}
+		return str;
+	};
+
+	/**
+	 * タスクの描画
+	 */
+	const renderTask = () => {
+		// 全データ
+		const dataAll = model.getItem();
+		const ul = document.createElement('ul');
+		let html = '';
+		dataAll.forEach((dataItem) => {
+			html += `
+				<li class="taskItem is-${dataItem.priority} ${dataItem.status === 'complete' ? 'is-complete' : ''}">
+					<p class="taskContent">${dataItem.content}</p>
+					<div class="taskStatus">
+						<dl>
+							<dt>優先度</dt><dd>${getPriorityStr(dataItem.priority)}</dd>
+						</dl>
+						${dataItem.limit ? `
+						<dl>
+							<dt>期限</dt><dd>${dataItem.limit}</dd>
+						</dl>
+						` : ''}
+						<ul>
+							<li><label><input type="checkbox" class="js-completeItem" ${dataItem.status === 'complete' ? 'checked' : ''}>完了</label></li>
+							<li><button class="js-changeItem">編集</button></li>
+						</ul>
+					</div>
+				</li>
+			`;
+		});
+		ul.innerHTML = html;
+		emptyHtml(stage);
+		stage.appendChild(ul);
+	};
+
+	/**
+	 * ステータスの描画
+	 */
+	const renderStatus = () => {
+		/**
+		 * 各要素の任意のプロパティに、対象オブジェクトの同名のプロパティの値を設定
+		 * @param {Node} containerNode 要素をまとめる親ノード
+		 * @param {Array<string>} childNodeSelectors 対象となる要素のセレクタ
+		 * @param {String} prop 変更する要素のプロパティ
+		 * @param {Object} status 変更する要素へ設定する値がまとまっているオブジェクト
+		 */
+		const setValueSameNameProp = (containerNode, childNodeSelectors, prop, status) => {
+			childNodeSelectors.forEach((childSelector) => {
+				containerNode.querySelector(childSelector)[prop] = status[childSelector.slice(1)];
+			});
+		};
+
+		setValueSameNameProp(
+			document.getElementById('js-statusBox'),
+			['.totalCount', '.leftCount', '.completeCount', '.completionRate'],
+			'textContent',
+			statusData
+		);
+	};
+
+	/**
+	 * 完了済みタスクを削除するボタンの表示切り替え
+	 */
+	const toggleShowTaskDeleteBtn = () => {
+		const taskDeleteBtn = document.getElementById('js-taskDeleteBtn');
+		const CLASS_NONE = 'js-none';
+		const taskDeleteBtnClassList = taskDeleteBtn.classList;
+		if (statusData.completeCount > 0) {
+			taskDeleteBtnClassList.remove(CLASS_NONE);
+		} else if (!taskDeleteBtnClassList.contains(CLASS_NONE)) {
+			taskDeleteBtnClassList.add(CLASS_NONE);
+		}
+	};
+
+	/**
+	 * 完了ボタンへのイベント登録
+	 */
+	const addCompleteEvent = () => {
+		const allcompleteInputs = document.querySelectorAll('.js-completeItem');
+		Array.prototype.slice.call(allcompleteInputs).forEach((completeInput, index) => {
+			completeInput.addEventListener('click', (e) => {
+				model.setItem('changeStatus', [index, e.currentTarget.checked]);
+			});
+		});
+	};
+
 	/**
 	 * 画面の描画
 	 */
 	const render = () => {
-		// 全データ
-		const dataAll = model.getItem();
-
-		/**
-		 * タスクの描画
-		 */
-		const renderTask = () => {
-			const ul = document.createElement('ul');
-			let html = '';
-			dataAll.forEach((dataItem) => {
-				html += `
-					<li class="taskItem">
-						<p class="taskContent">${dataItem.content}</p>
-						<dl>
-							<dt>優先度</dt><dd>${dataItem.priority}</dd>
-						</dl>
-						<dl>
-							<dt>リミット</dt><dd>${dataItem.limit}</dd>
-						</dl>
-						<ul>
-							<li><label><input type="checkbox" class="js-complateItem">完了</label></li>
-							<li><button class="js-changeItem">編集</button></li>
-						</ul>
-					</li>
-				`;
-			});
-			ul.innerHTML = html;
-			emptyHtml(stage);
-			stage.appendChild(ul);
-		};
-
-		/**
-		 * ステータスの描画
-		 */
-		const renderStatus = () => {
-			// 各値をまとめたオブジェクト
-			const statusData = {
-				init() {
-					// タスク総数
-					this.totalCount = dataAll.length;
-					// 残タスク数
-					this.leftCount = (() => {
-						let result = 0;
-						dataAll.forEach((value) => {
-							if (value.status === 'open') {
-								result += 1;
-							}
-						});
-						return result;
-					})();
-					// 完了済みタスク数
-					this.complateCount = this.totalCount - this.leftCount;
-					// タスク完遂率
-					this.completionRate = (this.complateCount / this.totalCount) * 100;
-				}
-			};
-			statusData.init();
-
-			/**
-			 * 各要素の任意のプロパティに、対象オブジェクトの同名のプロパティの値を設定
-			 * @param {Node} containerNode 要素をまとめる親ノード
-			 * @param {Array<string>} childNodeSelectors 対象となる要素のセレクタ
-			 * @param {String} prop 変更する要素のプロパティ
-			 * @param {Object} status 変更する要素へ設定する値がまとまっているオブジェクト
-			 */
-			const setValueSameNameProp = (containerNode, childNodeSelectors, prop, status) => {
-				childNodeSelectors.forEach((childSelector) => {
-					containerNode.querySelector(childSelector)[prop] = status[childSelector.slice(1)];
-				});
-			};
-
-			setValueSameNameProp(
-				document.getElementById('js-statusBox'),
-				['.totalCount', '.leftCount', '.complateCount', '.completionRate'],
-				'textContent',
-				statusData
-			);
-		};
-
 		renderTask();
 		renderStatus();
+		toggleShowTaskDeleteBtn();
+		addCompleteEvent();
 	};
 
-	// カスタムイベントのリスナー登録
-	model.dispatcher.addEventListener('dataChange', render);
-
-	// フォームボタンのイベント登録
+	// フォームのイベント登録
 	addFormEvent();
+
+	// カスタムイベントのリスナー登録
+	model.dispatcher.addEventListener('dataChange', () => {
+		statusData.init();
+		render();
+	});
 };
 
 TO_DO_APP();

@@ -16,14 +16,15 @@
 </header><!-- /.m-gHeader -->
 
 <div id="stage"></div>
-
+<div class="taskDeleteBtn js-none" id="js-taskDeleteBtn"><button>完了済みのタスクをゴミ箱へ入れる</button>
+</div>
 <form name="taskForm" id="js-taskForm">
 	<ul>
 		<li>内容： <input type="text" name="content" required></li>
-		<li>優先度： <lebel><input type="radio" name="priority" value="high" required>高</label>
-			<lebel><input type="radio" name="priority" value="normal">中</label>
-			<lebel><input type="radio" name="priority" value="low">低</label></li>
-		<li>期限： <input type="date" name="limit"></li>
+		<li>優先度： <label><input type="radio" name="priority" value="high" required>高</label>
+			<label><input type="radio" name="priority" value="middle" checked>中</label>
+			<label><input type="radio" name="priority" value="low">低</label></li>
+		<li>期限： <input type="date" name="limit" min="2017-09-10"></li>
 	</ul>
 	<ul>
 		<input type="submit" value="追加">
@@ -35,7 +36,7 @@
 	<ul>
 		<li>現在のタスク総数： <span class="totalCount">-</span> 個</li>
 		<li>残タスク数： <span class="leftCount">-</span> 個</li>
-		<li>完了済みタスク数： <span class="complateCount">-</span> 個</li>
+		<li>完了済みタスク数： <span class="completeCount">-</span> 個</li>
 		<li>完遂率： <span class="completionRate">-</span> ％</li>
 	</ul>
 </div>
