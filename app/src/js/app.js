@@ -201,6 +201,29 @@ const TO_DO_APP = () => {
 		addCompleteEvent();
 	};
 
+	/**
+	 * ゼロパディング
+	 * @param {Number} Num ゼロパティングする値
+	 * @param {Number} digit 最終的な桁数
+	 * @return {String}
+	 */
+	const addZeroPadding = (Num, digit) => {
+		let result = '';
+		for (let i = 1; i < digit; i += 1) {
+			result += '0';
+		}
+		return (result + Num).slice(-digit);
+	};
+
+	const setInputDateMin = () => {
+		const dateInput = document.getElementById('js-taskForm').querySelector('input[type="date"]');
+		const today = new Date();
+		const formattedToday = (`${today.getFullYear()}-${addZeroPadding(today.getMonth() + 1, 2)}-${today.getDate()}`);
+		dateInput.setAttribute('min', formattedToday);
+	};
+
+	setInputDateMin();
+
 	// フォームのイベント登録
 	addFormEvent();
 
