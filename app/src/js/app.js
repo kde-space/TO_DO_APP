@@ -32,7 +32,66 @@ const TO_DO_APP = () => {
 		 */
 		getItem() {
 			return this._stateAll;
+		},
+
+		removeAllItem() {
+			this._stateAll = this._stateAll.filter((value) => {
+				if (value.status !== 'complete') {
+					return value;
+				}
+			});
+			this.dispatcher.dispatchEvent(this.ev);
 		}
+	};
+
+	/**
+	 * 汎用的に使える関数群
+	 */
+	const utilityFunc = {
+		/**
+		 * 中身を空にする
+		 * @param {Node} target 中身を空にするオブジェクト
+		 */
+		emptyHtml(target) {
+			while (target.firstChild) {
+				target.removeChild(target.firstChild);
+			}
+		},
+
+		/**
+		 * ゼロパディング
+		 * @param {Number} Num ゼロパティングする値
+		 * @param {Number} digit 最終的な桁数
+		 * @return {String}
+		 */
+		addZeroPadding(Num, digit) {
+			let result = '';
+			for (let i = 1; i < digit; i += 1) {
+				result += '0';
+			}
+			return (result + Num).slice(-digit);
+		},
+
+		/**
+		 * 優先度を示す文字列を表示用に変換
+		 * @param {String} priority 優先度を示す文字列
+		 */
+		getPriorityStr(priority) {
+			let str = '';
+			switch (priority) {
+			case 'high':
+				str = '高';
+				break;
+			case 'low':
+				str = '低';
+				break;
+			default:
+				str = '中';
+				break;
+			}
+			return str;
+		}
+
 	};
 
 	/**
@@ -54,13 +113,13 @@ const TO_DO_APP = () => {
 	};
 
 	/**
-	 * 中身を空にする
-	 * @param {Node} target 中身を空にするオブジェクト
+	 * フォームのinput[type="date"]のmin属性に今日の日付を設定
 	 */
-	const emptyHtml = (target) => {
-		while (target.firstChild) {
-			target.removeChild(target.firstChild);
-		}
+	const setInputDateMin = () => {
+		const dateInput = document.getElementById('js-taskForm').querySelector('input[type="date"]');
+		const today = new Date();
+		const formattedToday = `${today.getFullYear()}-${utilityFunc.addZeroPadding(today.getMonth() + 1, 2)}-${utilityFunc.addZeroPadding(today.getDate(), 2)}`;
+		dateInput.setAttribute('min', formattedToday);
 	};
 
 	// 全データから各値をまとめたオブジェクト
@@ -88,25 +147,6 @@ const TO_DO_APP = () => {
 	};
 
 	/**
-	 * 優先度を示すテキスト取得
-	 */
-	const getPriorityStr = (hoge) => {
-		let str = '';
-		switch (hoge) {
-		case 'high':
-			str = '高';
-			break;
-		case 'low':
-			str = '低';
-			break;
-		default:
-			str = '中';
-			break;
-		}
-		return str;
-	};
-
-	/**
 	 * タスクの描画
 	 */
 	const renderTask = () => {
@@ -120,7 +160,7 @@ const TO_DO_APP = () => {
 					<p class="taskContent">${dataItem.content}</p>
 					<div class="taskStatus">
 						<dl>
-							<dt>優先度</dt><dd>${getPriorityStr(dataItem.priority)}</dd>
+							<dt>優先度</dt><dd>${utilityFunc.getPriorityStr(dataItem.priority)}</dd>
 						</dl>
 						${dataItem.limit ? `
 						<dl>
@@ -136,7 +176,7 @@ const TO_DO_APP = () => {
 			`;
 		});
 		ul.innerHTML = html;
-		emptyHtml(stage);
+		utilityFunc.emptyHtml(stage);
 		stage.appendChild(ul);
 	};
 
@@ -192,6 +232,18 @@ const TO_DO_APP = () => {
 	};
 
 	/**
+	 * 完了済みタスクをゴミ箱へ移動
+	 */
+	const moveCompleteTask = () => {
+		const deleteBtn = document.getElementById('js-taskDeleteBtn').firstElementChild;
+		deleteBtn.addEventListener('click', () => {
+			console.log(model.getItem());
+			model.removeAllItem();
+		});
+	};
+
+
+	/**
 	 * 画面の描画
 	 */
 	const render = () => {
@@ -202,36 +254,25 @@ const TO_DO_APP = () => {
 	};
 
 	/**
-	 * ゼロパディング
-	 * @param {Number} Num ゼロパティングする値
-	 * @param {Number} digit 最終的な桁数
-	 * @return {String}
+	 * 実行
 	 */
-	const addZeroPadding = (Num, digit) => {
-		let result = '';
-		for (let i = 1; i < digit; i += 1) {
-			result += '0';
-		}
-		return (result + Num).slice(-digit);
+	const start = () => {
+		setInputDateMin();
+
+		// フォームのイベント登録
+		addFormEvent();
+
+		moveCompleteTask();
+
+		// カスタムイベントのリスナー登録
+		model.dispatcher.addEventListener('dataChange', () => {
+			statusData.init();
+			render();
+		});
+
 	};
 
-	const setInputDateMin = () => {
-		const dateInput = document.getElementById('js-taskForm').querySelector('input[type="date"]');
-		const today = new Date();
-		const formattedToday = (`${today.getFullYear()}-${addZeroPadding(today.getMonth() + 1, 2)}-${today.getDate()}`);
-		dateInput.setAttribute('min', formattedToday);
-	};
-
-	setInputDateMin();
-
-	// フォームのイベント登録
-	addFormEvent();
-
-	// カスタムイベントのリスナー登録
-	model.dispatcher.addEventListener('dataChange', () => {
-		statusData.init();
-		render();
-	});
+	start();
 };
 
 TO_DO_APP();
