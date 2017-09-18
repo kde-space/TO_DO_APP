@@ -41,6 +41,31 @@
 	</ul>
 </div>
 
+<div class="modal js-none" id="js-modal">
+	<div class="modal-container">
+		<div class="modal-close">×</div>
+		<dl class="m-contentBox">
+			<dt>編集</dt>
+			<dd>
+				<form name="taskEditForm" id="js-taskEdit">
+					<ul>
+						<li>内容： <input type="text" name="content" required></li>
+						<li>優先度： <label><input type="radio" name="priority" value="high" required>高</label>
+							<label><input type="radio" name="priority" value="middle">中</label>
+							<label><input type="radio" name="priority" value="low">低</label></li>
+						<li>期限： <input type="date" name="limit"></li>
+					</ul>
+					<ul>
+						<input type="submit" value="完了">
+						<input type="reset" value="クリア">
+					</ul>
+				</form><!-- /.taskForm -->
+			</dd>
+		</dl>
+	</div>
+	<div class="modal-bg"></div>
+</div>
+
 
 </div><!-- /#l-wrapper -->
 <script src="/js/app.min.js"></script>

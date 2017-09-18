@@ -5,13 +5,27 @@ import "babel-polyfill";
 
 const TO_DO_APP = () => {
 	const stage = document.getElementById('stage');
+	//const modal = document.getElementById('js-modal');
+	const CLASS_NONE = 'js-none';
 
 	// Model管理
 	const model = {
 		dispatcher: document.createElement('div'),
 		ev: new Event('dataChange'),
 		// ステート（直接外部からは参照できない）
-		_stateAll: [],
+		_stateAll: [
+			{content: "ご飯を食べる", priority: "high", limit: "2017-09-19", status: "open"},
+			{content: "歯を磨く", priority: "middle", limit: "", status: "open"},
+			{content: "昼寝する", priority: "low", limit: "", status: "open"},
+			{content: "トマトジュースを飲む", priority: "middle", limit: "", status: "open"},
+			{content: "映画を見る", priority: "middle", limit: "", status: "open"},
+			{content: "勉強する", priority: "high", limit: "", status: "open"},
+			{content: "渋谷で買い物をする", priority: "high", limit: "", status: "open"},
+			{content: "友達と飲み会", priority: "middle", limit: "", status: "open"},
+			{content: "ああああ", priority: "middle", limit: "", status: "complete"},
+			{content: "小説を3冊読む", priority: "middle", limit: "", status: "open"},
+			{content: "今後の社会について考える", priority: "high", limit: "2017-09-21", status: "open"}
+		],
 
 		/**
 		 * ステートへの保存
@@ -23,6 +37,11 @@ const TO_DO_APP = () => {
 				this._stateAll.push(arg);
 			} else if (type === 'changeStatus') {
 				this._stateAll[arg[0]].status = arg[1] ? 'complete' : 'open';
+			} else if (type === 'edit') {
+				const targetElement = this._stateAll[arg[0]];
+				targetElement.content = arg[1];
+				targetElement.priority = arg[2];
+				targetElement.limit = arg[3];
 			}
 			this.dispatcher.dispatchEvent(this.ev);
 		},
@@ -30,11 +49,17 @@ const TO_DO_APP = () => {
 		/**
 		 * ステートの取得
 		 */
-		getItem() {
+		getItem(opt_index) {
+			if (opt_index >= 0 && opt_index < this._stateAll.length) {
+				return this._stateAll[opt_index];
+			}
 			return this._stateAll;
 		},
 
-		removeAllItem() {
+		/**
+		 * 完了済みの要素を削除
+		 */
+		removeCompletedItem() {
 			this._stateAll = this._stateAll.filter((value) => {
 				if (value.status !== 'complete') {
 					return value;
@@ -116,10 +141,15 @@ const TO_DO_APP = () => {
 	 * フォームのinput[type="date"]のmin属性に今日の日付を設定
 	 */
 	const setInputDateMin = () => {
-		const dateInput = document.getElementById('js-taskForm').querySelector('input[type="date"]');
+		const dateInput = document.querySelectorAll('input[type="date"]');
+		if (dateInput.legnth < 1) {
+			return;
+		}
 		const today = new Date();
 		const formattedToday = `${today.getFullYear()}-${utilityFunc.addZeroPadding(today.getMonth() + 1, 2)}-${utilityFunc.addZeroPadding(today.getDate(), 2)}`;
-		dateInput.setAttribute('min', formattedToday);
+		Array.prototype.slice.call(dateInput).forEach((input) => {
+			input.setAttribute('min', formattedToday);
+		});
 	};
 
 	// 全データから各値をまとめたオブジェクト
@@ -169,7 +199,7 @@ const TO_DO_APP = () => {
 						` : ''}
 						<ul>
 							<li><label><input type="checkbox" class="js-completeItem" ${dataItem.status === 'complete' ? 'checked' : ''}>完了</label></li>
-							<li><button class="js-changeItem">編集</button></li>
+							<li><button class="js-editItem">編集</button></li>
 						</ul>
 					</div>
 				</li>
@@ -210,7 +240,6 @@ const TO_DO_APP = () => {
 	 */
 	const toggleShowTaskDeleteBtn = () => {
 		const taskDeleteBtn = document.getElementById('js-taskDeleteBtn');
-		const CLASS_NONE = 'js-none';
 		const taskDeleteBtnClassList = taskDeleteBtn.classList;
 		if (statusData.completeCount > 0) {
 			taskDeleteBtnClassList.remove(CLASS_NONE);
@@ -231,14 +260,97 @@ const TO_DO_APP = () => {
 		});
 	};
 
+	const modal = {
+		wrapper: document.getElementById('js-modal'),
+		form: document.forms['js-taskEdit'],
+		editBtnIndex: null,
+
+		/**
+		 * モーダルを開く
+		 */
+		open() {
+			this.wrapper.classList.remove(CLASS_NONE);
+		},
+
+		/**
+		 * モーダルを閉じる
+		 */
+		close() {
+			this.wrapper.classList.add(CLASS_NONE);
+		},
+
+		/**
+		 * モーダルを閉じるイベントを登録
+		 */
+		setCloseEvent() {
+			const modalBg = this.wrapper.querySelector('.modal-bg');
+			const modalCloseBtn = this.wrapper.querySelector('.modal-close');
+			[modalBg, modalCloseBtn].forEach((item) => {
+				item.addEventListener('click', () => {
+					this.close();
+				});
+			});
+		},
+
+		/**
+		 * モーダル内のフォームを初期化
+		 */
+		initForm(index) {
+			const itemState = model.getItem(index);
+			const form = this.form;
+			form.querySelector('input[type="text"]').value = itemState.content;
+			form.querySelector('input[type="date"]').value = itemState.limit;
+			Array.prototype.slice.call(form.querySelectorAll('input[type="radio"]')).forEach((item) => {
+				if (item.value === itemState.priority) {
+					item.checked = true;
+				} else if (item.checked) {
+					item.checked = false;
+				}
+			});
+		},
+
+		/**
+		 * モーダル内のフォームのイベント登録
+		 * 		編集された内容にステートを更新
+		 */
+		setEditFormEvent() {
+			const form = this.form;
+			form.addEventListener('submit', (e) => {
+				e.preventDefault();
+				const index = this.editBtnIndex;
+				const content = form.content.value;
+				const priority = form.priority.value;
+				const limit = form.limit.value;
+				model.setItem('edit', [index, content, priority, limit]);
+				// モーダル閉じる
+				this.close();
+			});
+		}
+
+	};
+
+	/**
+	 * 編集ボタンへのイベント登録
+	 */
+	const addEditEvent = () => {
+		const allEditBtn = document.querySelectorAll('.js-editItem');
+		Array.prototype.slice.call(allEditBtn).forEach((editBtn, index) => {
+			editBtn.addEventListener('click', () => {
+				modal.initForm(index);
+				modal.open();
+				modal.editBtnIndex = index;
+			});
+		});
+	};
+
+
 	/**
 	 * 完了済みタスクをゴミ箱へ移動
 	 */
 	const moveCompleteTask = () => {
 		const deleteBtn = document.getElementById('js-taskDeleteBtn').firstElementChild;
 		deleteBtn.addEventListener('click', () => {
-			console.log(model.getItem());
-			model.removeAllItem();
+			model.removeCompletedItem();
 		});
 	};
 
@@ -251,6 +363,7 @@ const TO_DO_APP = () => {
 		renderStatus();
 		toggleShowTaskDeleteBtn();
 		addCompleteEvent();
+		addEditEvent();
 	};
 
 	/**
@@ -262,6 +375,11 @@ const TO_DO_APP = () => {
 		// フォームのイベント登録
 		addFormEvent();
 
+		statusData.init();
+
+		// 一時的
+		render();
+
 		moveCompleteTask();
 
 		// カスタムイベントのリスナー登録
@@ -270,6 +388,11 @@ const TO_DO_APP = () => {
 			render();
 		});
 
+		// モーダルの閉じるイベント登録
+		modal.setCloseEvent();
+
+		// モーダルのフォームイベント登録
+		modal.setEditFormEvent();
 	};
 
 	start();
