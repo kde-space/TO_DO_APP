@@ -7,6 +7,7 @@ const TO_DO_APP = () => {
 	const stage = document.getElementById('stage');
 	//const modal = document.getElementById('js-modal');
 	const CLASS_NONE = 'js-none';
+	const now = new Date();
 
 	// Model管理
 	const model = {
@@ -14,11 +15,11 @@ const TO_DO_APP = () => {
 		ev: new Event('dataChange'),
 		// ステート（直接外部からは参照できない）
 		_stateAll: [
-			{content: "ご飯を食べる", priority: "high", limit: "2017-09-19", status: "open"},
-			{content: "歯を磨く", priority: "middle", limit: "", status: "open"},
-			{content: "昼寝する", priority: "low", limit: "", status: "open"},
+			{content: "ご飯を食べる", priority: "high", limit: "2017-09-18", status: "open"},
+			{content: "歯を磨く", priority: "middle", limit: "2017-09-19", status: "open"},
+			{content: "昼寝する", priority: "low", limit: "2017-09-20", status: "open"},
 			{content: "トマトジュースを飲む", priority: "middle", limit: "", status: "open"},
-			{content: "映画を見る", priority: "middle", limit: "", status: "open"},
+			{content: "映画を見る", priority: "middle", limit: "2017-09-22", status: "open"},
 			{content: "勉強する", priority: "high", limit: "", status: "open"},
 			{content: "渋谷で買い物をする", priority: "high", limit: "", status: "open"},
 			{content: "友達と飲み会", priority: "middle", limit: "", status: "open"},
@@ -145,14 +146,15 @@ const TO_DO_APP = () => {
 		if (dateInput.legnth < 1) {
 			return;
 		}
-		const today = new Date();
-		const formattedToday = `${today.getFullYear()}-${utilityFunc.addZeroPadding(today.getMonth() + 1, 2)}-${utilityFunc.addZeroPadding(today.getDate(), 2)}`;
+		const formattedToday = `${now.getFullYear()}-${utilityFunc.addZeroPadding(now.getMonth() + 1, 2)}-${utilityFunc.addZeroPadding(now.getDate(), 2)}`;
 		Array.prototype.slice.call(dateInput).forEach((input) => {
 			input.setAttribute('min', formattedToday);
 		});
 	};
 
-	// 全データから各値をまとめたオブジェクト
+	/**
+	 * 全データから各値をまとめたオブジェクト
+	 */
 	const statusData = {
 		init() {
 			// 全データ
@@ -177,6 +179,74 @@ const TO_DO_APP = () => {
 	};
 
 	/**
+	 * ハイフンつなぎの日付から正確な日時を示すDateオブジェクト取得
+	 * @param {String} dateText 2017-09-25 のようなハイフンつなぎの文字列
+	 * @return {Object} Dateオブジェクト
+	 */
+	const getCorrectDateObj = (dateText) => {
+		if (!dateText) {
+			return null;
+		}
+		return new Date(dateText.replace(/-/g, '/'));
+	};
+
+	/**
+	 * 期限に対しての状態を取得
+	 * @param {String} dateText 2017-09-25 のようなハイフンつなぎの文字列
+	 * @param {Date} endDateObj 期限の日付オブジェクト
+	 * @param {Date} nowDateObj 現在の日付けオブジェクト
+	 * @return {String}
+	 */
+	const getStatusAgainstlimit = (dateText, endDateObj, nowDateObj) => {
+		if (!dateText || !endDateObj) {
+			return null;
+		}
+		const endTime = (() =>
+			new Date(
+				endDateObj.getFullYear(),
+				endDateObj.getMonth(),
+				endDateObj.getDate() + 1,
+				endDateObj.getHours(),
+				endDateObj.getMinutes(),
+				endDateObj.getSeconds() - 1
+			))();
+		if (endTime.getTime() - nowDateObj.getTime() <= 0) {
+			return 'over';
+		} else if (endTime.getTime() - nowDateObj.getTime() < 86400000) {
+			return 'thatday';
+		}
+		return 'notyet';
+	};
+
+	/**
+	 * 期限に対して現在の状態を表すhtmlを取得
+	 * @param {String} status 期限に対しての現在の状態
+	 * @param {Date} endDateObj 期限の日付オブジェクト
+	 * @param {Date} nowDateObj 現在の日付けオブジェクト
+	 * @return {String}
+	 */
+	const getShowHtmlAgainstlimit = (status, endDateObj, nowDateObj) => {
+		switch (status) {
+		case 'over': {
+			return '期限が過ぎています';
+		}
+		case 'thatday': {
+			return '期限当日です';
+		}
+		case 'notyet': {
+			if (!endDateObj || !nowDateObj) {
+				return null;
+			}
+			const diffTime = endDateObj.getTime() - nowDateObj.getTime();
+			const diffDate = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+			return `残り${diffDate}日`;
+		}
+		default:
+			return null;
+		}
+	};
+
+	/**
 	 * タスクの描画
 	 */
 	const renderTask = () => {
@@ -184,9 +254,15 @@ const TO_DO_APP = () => {
 		const dataAll = model.getItem();
 		const ul = document.createElement('ul');
 		let html = '';
+
 		dataAll.forEach((dataItem) => {
+			const itemlimit = dataItem.limit;
+			const endDay = getCorrectDateObj(itemlimit);
+			const statusAgainstlimit = getStatusAgainstlimit(itemlimit, endDay, now);
+			const htmlAgainstlimit = getShowHtmlAgainstlimit(statusAgainstlimit, endDay, now);
+
 			html += `
-				<li class="taskItem is-${dataItem.priority} ${dataItem.status === 'complete' ? 'is-complete' : ''}">
+				<li class="taskItem is-${dataItem.priority}${dataItem.status === 'complete' ? ' is-complete' : ''}${statusAgainstlimit === 'over' ? ' is-over' : ''}">
 					<p class="taskContent">${dataItem.content}</p>
 					<div class="taskStatus">
 						<dl>
@@ -194,7 +270,7 @@ const TO_DO_APP = () => {
 						</dl>
 						${dataItem.limit ? `
 						<dl>
-							<dt>期限</dt><dd>${dataItem.limit}</dd>
+							<dt>期限</dt><dd>${dataItem.limit}(${htmlAgainstlimit})</dd>
 						</dl>
 						` : ''}
 						<ul>

@@ -61,6 +61,9 @@
 	&.is-low {
 		background-color: #D2FFD6
 	}
+	&.is-over {
+		background-color: #e00;
+	}
 	&.is-complete {
 		background-color: #ccc;
 	}
