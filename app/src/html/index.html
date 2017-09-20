@@ -16,7 +16,15 @@
 </header><!-- /.m-gHeader -->
 
 <div id="stage"></div>
-<div class="taskDeleteBtn js-none" id="js-taskDeleteBtn"><button>完了済みのタスクをゴミ箱へ入れる</button>
+<div class="taskDeleteBtn js-none" id="js-taskDeleteBtn">
+	<button>完了済みのタスクをゴミ箱へ入れる</button>
+</div>
+<div class="sortArea">
+	<h2>並び替え</h2>
+	<ul class="sortBtns" id="js-sort">
+		<li><a href="#" class="js-sortPriority">優先度順</a></li>
+		<li><a href="#" class="js-sortLimit">期限順</a></li>
+	</ul>
 </div>
 <form name="taskForm" id="js-taskForm">
 	<ul>

@@ -430,6 +430,23 @@ const TO_DO_APP = () => {
 		});
 	};
 
+	const sortTask = () => {
+		const sortBtns = document.getElementById('js-sort').getElementsByTagName('a');
+		if (sortBtns.length < 1) {
+			return;
+		}
+		Array.prototype.slice.call(sortBtns).forEach((btn) => {
+			btn.addEventListener('click', (e) => {
+				e.preventDefault();
+				if (e.currentTarget.classList.contains('js-sortPriority')) {
+					console.log('p');
+				} else if (e.currentTarget.classList.contains('js-sortLimit')) {
+					console.log('l');
+				}
+			});
+		});
+	};
+
 
 	/**
 	 * 画面の描画
@@ -469,6 +486,8 @@ const TO_DO_APP = () => {
 
 		// モーダルのフォームイベント登録
 		modal.setEditFormEvent();
+
+		sortTask();
 	};
 
 	start();
