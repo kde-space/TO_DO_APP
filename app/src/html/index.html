@@ -22,16 +22,16 @@
 <div class="sortArea">
 	<h2>並び替え</h2>
 	<ul class="sortBtns" id="js-sort">
-		<li><a href="#" class="js-sortPriority">優先度順</a></li>
-		<li><a href="#" class="js-sortLimit">期限順</a></li>
+		<li><a href="#" class="js-sort-priority">優先度順</a></li>
+		<li><a href="#" class="js-sort-limit">期限順</a></li>
 	</ul>
 </div>
 <form name="taskForm" id="js-taskForm">
 	<ul>
 		<li>内容： <input type="text" name="content" required></li>
-		<li>優先度： <label><input type="radio" name="priority" value="high" required>高</label>
-			<label><input type="radio" name="priority" value="middle" checked>中</label>
-			<label><input type="radio" name="priority" value="low">低</label></li>
+		<li>優先度： <label><input type="radio" name="priority" value="3" required>高</label>
+			<label><input type="radio" name="priority" value="2" checked>中</label>
+			<label><input type="radio" name="priority" value="1">低</label></li>
 		<li>期限： <input type="date" name="limit"></li>
 	</ul>
 	<ul>
@@ -58,9 +58,9 @@
 				<form name="taskEditForm" id="js-taskEdit">
 					<ul>
 						<li>内容： <input type="text" name="content" required></li>
-						<li>優先度： <label><input type="radio" name="priority" value="high" required>高</label>
-							<label><input type="radio" name="priority" value="middle">中</label>
-							<label><input type="radio" name="priority" value="low">低</label></li>
+						<li>優先度： <label><input type="radio" name="priority" value="3" required>高</label>
+							<label><input type="radio" name="priority" value="2">中</label>
+							<label><input type="radio" name="priority" value="1">低</label></li>
 						<li>期限： <input type="date" name="limit"></li>
 					</ul>
 					<ul>

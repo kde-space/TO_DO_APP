@@ -5,70 +5,8 @@ import "babel-polyfill";
 
 const TO_DO_APP = () => {
 	const stage = document.getElementById('stage');
-	//const modal = document.getElementById('js-modal');
 	const CLASS_NONE = 'js-none';
 	const now = new Date();
-
-	// Model管理
-	const model = {
-		dispatcher: document.createElement('div'),
-		ev: new Event('dataChange'),
-		// ステート（直接外部からは参照できない）
-		_stateAll: [
-			{content: "ご飯を食べる", priority: "high", limit: "2017-09-18", status: "open"},
-			{content: "歯を磨く", priority: "middle", limit: "2017-09-19", status: "open"},
-			{content: "昼寝する", priority: "low", limit: "2017-09-20", status: "open"},
-			{content: "トマトジュースを飲む", priority: "middle", limit: "", status: "open"},
-			{content: "映画を見る", priority: "middle", limit: "2017-09-22", status: "open"},
-			{content: "勉強する", priority: "high", limit: "", status: "open"},
-			{content: "渋谷で買い物をする", priority: "high", limit: "", status: "open"},
-			{content: "友達と飲み会", priority: "middle", limit: "", status: "open"},
-			{content: "ああああ", priority: "middle", limit: "", status: "complete"},
-			{content: "小説を3冊読む", priority: "middle", limit: "", status: "open"},
-			{content: "今後の社会について考える", priority: "high", limit: "2017-09-21", status: "open"}
-		],
-
-		/**
-		 * ステートへの保存
-		 * @param {String} type
-		 * @param {*} arg
-		 */
-		setItem(type, arg) {
-			if (type === 'add') {
-				this._stateAll.push(arg);
-			} else if (type === 'changeStatus') {
-				this._stateAll[arg[0]].status = arg[1] ? 'complete' : 'open';
-			} else if (type === 'edit') {
-				const targetElement = this._stateAll[arg[0]];
-				targetElement.content = arg[1];
-				targetElement.priority = arg[2];
-				targetElement.limit = arg[3];
-			}
-			this.dispatcher.dispatchEvent(this.ev);
-		},
-
-		/**
-		 * ステートの取得
-		 */
-		getItem(opt_index) {
-			if (opt_index >= 0 && opt_index < this._stateAll.length) {
-				return this._stateAll[opt_index];
-			}
-			return this._stateAll;
-		},
-
-		/**
-		 * 完了済みの要素を削除
-		 */
-		removeCompletedItem() {
-			this._stateAll = this._stateAll.filter((value) => {
-				if (value.status !== 'complete') {
-					return value;
-				}
-			});
-			this.dispatcher.dispatchEvent(this.ev);
-		}
-	};
 
 	/**
 	 * 汎用的に使える関数群
@@ -105,10 +43,10 @@ const TO_DO_APP = () => {
 		getPriorityStr(priority) {
 			let str = '';
 			switch (priority) {
-			case 'high':
+			case 3:
 				str = '高';
 				break;
-			case 'low':
+			case 1:
 				str = '低';
 				break;
 			default:
@@ -116,8 +54,118 @@ const TO_DO_APP = () => {
 				break;
 			}
 			return str;
-		}
+		},
 
+		getFormattedToday() {
+			return `${now.getFullYear()}-${utilityFunc.addZeroPadding(now.getMonth() + 1, 2)}-${utilityFunc.addZeroPadding(now.getDate(), 2)}`;
+		}
+	};
+
+	// Model管理
+	const model = {
+		dispatcher: document.createElement('div'),
+		ev: new Event('dataChange'),
+		// ステート（直接外部からは参照できない）
+		_stateAll: [
+			{content: "ご飯を食べる", priority: 3, limit: "2017-09-18", status: "open"},
+			{content: "お米を食べる", priority: 3, limit: "2017-09-21", status: "open"},
+			{content: "お米を研ぐ", priority: 3, limit: "", status: "open"},
+			{content: "歯を磨く", priority: 2, limit: "2017-09-19", status: "open"},
+			{content: "昼寝する", priority: 1, limit: "2017-09-20", status: "open"},
+			{content: "トマトジュースを飲む", priority: 2, limit: "", status: "open"},
+			{content: "映画を見る", priority: 2, limit: "2017-09-22", status: "open"},
+			{content: "勉強する", priority: 3, limit: "", status: "open"},
+			{content: "渋谷で買い物をする", priority: 1, limit: "", status: "open"},
+			{content: "友達と飲み会", priority: 2, limit: "", status: "open"},
+			{content: "ああああ", priority: 2, limit: "", status: "complete"},
+			{content: "小説を3冊読む", priority: 2, limit: "", status: "open"},
+			{content: "今後の社会について考える", priority: 3, limit: "2017-09-21", status: "open"}
+		],
+
+		/**
+		 * ステートへの保存
+		 * @param {String} type
+		 * @param {*} arg
+		 */
+		setItem(type, arg) {
+			if (type === 'add') {
+				this._stateAll.push(arg);
+			} else if (type === 'changeStatus') {
+				this._stateAll[arg[0]].status = arg[1] ? 'complete' : 'open';
+			} else if (type === 'edit') {
+				const targetElement = this._stateAll[arg[0]];
+				targetElement.content = arg[1];
+				targetElement.priority = parseInt(arg[2], 10);
+				targetElement.limit = arg[3];
+			}
+			this.dispatcher.dispatchEvent(this.ev);
+		},
+
+		/**
+		 * ステートの取得
+		 */
+		getItem(opt_index) {
+			if (opt_index >= 0 && opt_index < this._stateAll.length) {
+				return this._stateAll[opt_index];
+			}
+			return this._stateAll;
+		},
+
+		/**
+		 * ソート
+		 */
+		sortItem(ary, order) {
+			this._stateAll.sort((a, b) => {
+				if (!Array.isArray(ary)) {
+					return 0;
+				}
+				let valueA = null;
+				let valueB = null;
+				const FormattedToday = utilityFunc.getFormattedToday();
+
+				for (let i = 0, l = ary.length; i < l; i += 1) {
+					if (!Object.prototype.hasOwnProperty.call(a, ary[i]) ||
+						!Object.prototype.hasOwnProperty.call(b, ary[i])) {
+						return 0;
+					}
+					valueA = (typeof a[ary[i]] === 'string') ? a[ary[i]].toUpperCase() : a[ary[i]];
+					valueB = (typeof b[ary[i]] === 'string') ? b[ary[i]].toUpperCase() : b[ary[i]];
+
+					// 期限が空の場合は今日の日付を一時的に設定
+					if (ary[i] === 'limit') {
+						valueA = !valueA ? FormattedToday : valueA;
+						valueB = !valueB ? FormattedToday : valueB;
+					}
+
+					if (valueA < valueB) {
+						if (!Array.isArray(order) || order[i] === 'asc') {
+							return -1;
+						}
+						return 1;
+					} else if (valueA > valueB) {
+						if (!Array.isArray(order) || order[i] === 'asc') {
+							return 1;
+						}
+						return -1;
+					}
+				}
+				return 0;
+			});
+			this.dispatcher.dispatchEvent(this.ev);
+		},
+
+		/**
+		 * 完了済みの要素を削除
+		 */
+		removeCompletedItem() {
+			this._stateAll = this._stateAll.filter((value) => {
+				if (value.status !== 'complete') {
+					return value;
+				}
+				return false;
+			});
+			this.dispatcher.dispatchEvent(this.ev);
+		}
 	};
 
 	/**
@@ -377,7 +425,7 @@ const TO_DO_APP = () => {
 			form.querySelector('input[type="text"]').value = itemState.content;
 			form.querySelector('input[type="date"]').value = itemState.limit;
 			Array.prototype.slice.call(form.querySelectorAll('input[type="radio"]')).forEach((item) => {
-				if (item.value === itemState.priority) {
+				if (parseInt(item.value, 10) === itemState.priority) {
 					item.checked = true;
 				} else if (item.checked) {
 					item.checked = false;
@@ -402,7 +450,6 @@ const TO_DO_APP = () => {
 				this.close();
 			});
 		}
-
 	};
 
 	/**
@@ -430,18 +477,22 @@ const TO_DO_APP = () => {
 		});
 	};
 
+	/**
+	 * 並び替え
+	 */
 	const sortTask = () => {
-		const sortBtns = document.getElementById('js-sort').getElementsByTagName('a');
+		const CLASS_CONTAINER = 'js-sort';
+		const sortBtns = document.getElementById(CLASS_CONTAINER).getElementsByTagName('a');
 		if (sortBtns.length < 1) {
 			return;
 		}
 		Array.prototype.slice.call(sortBtns).forEach((btn) => {
 			btn.addEventListener('click', (e) => {
 				e.preventDefault();
-				if (e.currentTarget.classList.contains('js-sortPriority')) {
-					console.log('p');
-				} else if (e.currentTarget.classList.contains('js-sortLimit')) {
-					console.log('l');
+				if (e.currentTarget.classList.contains(`${CLASS_CONTAINER}-priority`)) {
+					model.sortItem(['priority', 'limit'], ['', 'asc']);
+				} else if (e.currentTarget.classList.contains(`${CLASS_CONTAINER}-limit`)) {
+					model.sortItem(['limit', 'priority'], ['asc', '']);
 				}
 			});
 		});

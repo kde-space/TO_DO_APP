@@ -55,14 +55,14 @@
 	border: 1px solid;
 	border-radius: 3px;
 
-	&.is-high {
-		background-color: #FFCECE;
+	&.is-3 {
+		background-color: #FFD8AC;
 	}
-	&.is-low {
+	&.is-1 {
 		background-color: #D2FFD6
 	}
 	&.is-over {
-		background-color: #e00;
+		background-color: #FFA8A8;
 	}
 	&.is-complete {
 		background-color: #ccc;
