@@ -425,7 +425,7 @@ const TO_DO_APP = () => {
 			form.querySelector('input[type="text"]').value = itemState.content;
 			form.querySelector('input[type="date"]').value = itemState.limit;
 			Array.prototype.slice.call(form.querySelectorAll('input[type="radio"]')).forEach((item) => {
-				if (parseInt(item.value, 10) === itemState.priority) {
+				if (+item.value === +itemState.priority) {
 					item.checked = true;
 				} else if (item.checked) {
 					item.checked = false;
