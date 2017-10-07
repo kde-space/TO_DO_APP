@@ -1,7 +1,7 @@
 /**
  * TO DO アプリ
  */
-import "babel-polyfill";
+import 'babel-polyfill';
 
 const TO_DO_APP = () => {
 	const stage = document.getElementById('stage');
@@ -36,9 +36,25 @@ const TO_DO_APP = () => {
 			return (result + Num).slice(-digit);
 		},
 
+		escapeHtml(str) {
+			if (typeof str !== 'string') {
+				return str;
+			}
+			return str.replace(/[&'`"<>]/g, (match) => {
+				return {
+					'&': '&amp;',
+					"'": '&#x27;',
+					'`': '&#x60;',
+					'"': '&quot;',
+					'<': '&lt;',
+					'>': '&gt;'
+				}[match];
+			});
+		},
+
 		/**
 		 * 優先度を示す文字列を表示用に変換
-		 * @param {String} priority 優先度を示す文字列
+		 * @param {Number} priority 優先度を示す数値
 		 */
 		getPriorityStr(priority) {
 			let str = '';
@@ -65,21 +81,16 @@ const TO_DO_APP = () => {
 	const model = {
 		dispatcher: document.createElement('div'),
 		ev: new Event('dataChange'),
+
 		// ステート（直接外部からは参照できない）
 		_stateAll: [
-			{content: "ご飯を食べる", priority: 3, limit: "2017-09-18", status: "open"},
-			{content: "お米を食べる", priority: 3, limit: "2017-09-21", status: "open"},
-			{content: "お米を研ぐ", priority: 3, limit: "", status: "open"},
-			{content: "歯を磨く", priority: 2, limit: "2017-09-19", status: "open"},
-			{content: "昼寝する", priority: 1, limit: "2017-09-20", status: "open"},
-			{content: "トマトジュースを飲む", priority: 2, limit: "", status: "open"},
-			{content: "映画を見る", priority: 2, limit: "2017-09-22", status: "open"},
-			{content: "勉強する", priority: 3, limit: "", status: "open"},
-			{content: "渋谷で買い物をする", priority: 1, limit: "", status: "open"},
-			{content: "友達と飲み会", priority: 2, limit: "", status: "open"},
-			{content: "ああああ", priority: 2, limit: "", status: "complete"},
-			{content: "小説を3冊読む", priority: 2, limit: "", status: "open"},
-			{content: "今後の社会について考える", priority: 3, limit: "2017-09-21", status: "open"}
+			// {content: "ご飯を食べる", priority: 3, limit: "2017-10-1", status: "open"},
+			// {content: "お米を食べる", priority: 3, limit: "2017-09-30", status: "open"},
+			// {content: "お米を研ぐ", priority: 1, limit: "", status: "open"},
+			// {content: "歯を磨く", priority: 3, limit: "2017-10-10", status: "open"},
+			// {content: "昼寝する", priority: 1, limit: "2017-10-12", status: "open"},
+			// {content: "トマトジュースを飲む", priority: 2, limit: "", status: "open"},
+			// {content: "映画を見る", priority: 2, limit: "", status: "complete"}
 		],
 
 		/**
@@ -98,6 +109,7 @@ const TO_DO_APP = () => {
 				targetElement.priority = parseInt(arg[2], 10);
 				targetElement.limit = arg[3];
 			}
+			//localStorage.hoge = JSON.stringify(this._stateAll);
 			this.dispatcher.dispatchEvent(this.ev);
 		},
 
@@ -168,6 +180,18 @@ const TO_DO_APP = () => {
 		}
 	};
 
+
+	/**
+	 * 空白（空文字）であるか
+	 * @param {String} str
+	 */
+	const isBlank = (str) => {
+		if (/\S/.test(str)) {
+			return false;
+		}
+		return true;
+	};
+
 	/**
 	 * フォームのイベント登録
 	 */
@@ -181,6 +205,12 @@ const TO_DO_APP = () => {
 				limit: form.limit.value,
 				status: 'open'
 			};
+			if (isBlank(task.content)) {
+				alert('内容を入力してください');
+				form.reset();
+				return;
+			}
+			task.content = task.content.trim();
 			model.setItem('add', task);
 			form.reset();
 		});
@@ -222,7 +252,14 @@ const TO_DO_APP = () => {
 			// 完了済みタスク数
 			this.completeCount = this.totalCount - this.leftCount;
 			// タスク完遂率
-			this.completionRate = Math.floor((this.completeCount / this.totalCount) * 100);
+			this.completionRate = (() => {
+				let result = null;
+				result = Math.floor((this.completeCount / this.totalCount) * 100);
+				if (Number.isNaN(result)) {
+					return 0;
+				}
+				return result;
+			})();
 		}
 	};
 
@@ -300,6 +337,7 @@ const TO_DO_APP = () => {
 	const renderTask = () => {
 		// 全データ
 		const dataAll = model.getItem();
+		console.log(dataAll);
 		const ul = document.createElement('ul');
 		let html = '';
 
@@ -308,13 +346,14 @@ const TO_DO_APP = () => {
 			const endDay = getCorrectDateObj(itemlimit);
 			const statusAgainstlimit = getStatusAgainstlimit(itemlimit, endDay, now);
 			const htmlAgainstlimit = getShowHtmlAgainstlimit(statusAgainstlimit, endDay, now);
+			const txt = dataItem.content;
 
 			html += `
 				<li class="taskItem is-${dataItem.priority}${dataItem.status === 'complete' ? ' is-complete' : ''}${statusAgainstlimit === 'over' ? ' is-over' : ''}">
-					<p class="taskContent">${dataItem.content}</p>
+					<p class="taskContent">${utilityFunc.escapeHtml(txt)}</p>
 					<div class="taskStatus">
 						<dl>
-							<dt>優先度</dt><dd>${utilityFunc.getPriorityStr(dataItem.priority)}</dd>
+							<dt>優先度</dt><dd>${utilityFunc.getPriorityStr(+dataItem.priority)}</dd>
 						</dl>
 						${dataItem.limit ? `
 						<dl>
@@ -442,9 +481,14 @@ const TO_DO_APP = () => {
 			form.addEventListener('submit', (e) => {
 				e.preventDefault();
 				const index = this.editBtnIndex;
-				const content = form.content.value;
+				let content = form.content.value;
 				const priority = form.priority.value;
 				const limit = form.limit.value;
+				if (isBlank(content)) {
+					alert('内容を入力してください');
+					return;
+				}
+				content = content.trim();
 				model.setItem('edit', [index, content, priority, limit]);
 				// モーダル閉じる
 				this.close();
