@@ -338,6 +338,7 @@ const TO_DO_APP = () => {
 		// 全データ
 		const dataAll = model.getItem();
 		const ul = document.createElement('ul');
+		ul.classList = 'm-0 p-0';
 		let html = '';
 
 		dataAll.forEach((dataItem) => {
@@ -348,21 +349,39 @@ const TO_DO_APP = () => {
 			const txt = dataItem.content;
 
 			html += `
-				<li class="taskItem is-${dataItem.priority}${dataItem.status === 'complete' ? ' is-complete' : ''}${statusAgainstlimit === 'over' ? ' is-over' : ''}">
-					<p class="taskContent">${utilityFunc.escapeHtml(txt)}</p>
-					<div class="taskStatus">
-						<dl>
-							<dt>優先度</dt><dd>${utilityFunc.getPriorityStr(+dataItem.priority)}</dd>
-						</dl>
-						${dataItem.limit ? `
-						<dl>
-							<dt>期限</dt><dd>${dataItem.limit}(${htmlAgainstlimit})</dd>
-						</dl>
-						` : ''}
-						<ul>
-							<li><label><input type="checkbox" class="js-completeItem" ${dataItem.status === 'complete' ? 'checked' : ''}>完了</label></li>
-							<li><button class="js-editItem">編集</button></li>
-						</ul>
+				<li class="card mb-2 taskItem is-${dataItem.priority}${dataItem.status === 'complete' ? ' is-complete' : ''}${statusAgainstlimit === 'over' ? ' is-over' : ''}">
+					<div class="p-3">
+						<p class="font-weight-bold my-0 taskContent">${utilityFunc.escapeHtml(txt)}</p>
+					</div>
+					<div class="border border-right-0 border-bottom-0 border-left-0 bg-light taskStatus small">
+						<div class="row justify-content-between align-items-center py-2 px-3">
+							<div class="col-auto row">
+								<dl class="col-auto mb-0">
+									<dt class="d-inline-block">優先度</dt>
+									<dd class="d-inline-block">${utilityFunc.getPriorityStr(+dataItem.priority)}</dd>
+								</dl>
+								${dataItem.limit ? `
+								<dl class="col-auto mb-0">
+									<dt class="d-inline-block">期限</dt>
+									<dd class="d-inline-block">${dataItem.limit}<span class="text-secondary ml-2">${htmlAgainstlimit}</span></dd>
+								</dl>
+								` : ''}
+							</div>
+							<div class="col-auto">
+								<ul class="list-inline">
+									<li class="list-inline-item">
+										<label class="custom-control custom-checkbox">
+											<input type="checkbox" class="custom-control-input js-completeItem" ${dataItem.status === 'complete' ? 'checked' : ''}>
+											<span class="custom-control-indicator"></span>
+											<span class="custom-control-description">完了</span>
+										</label>
+									</li>
+									<li class="list-inline-item">
+										<button class="btn btn-secondary btn-sm js-editItem">編集</button>
+									</li>
+								</ul>
+							</div>
+						</div>
 					</div>
 				</li>
 			`;
@@ -525,7 +544,7 @@ const TO_DO_APP = () => {
 	 */
 	const sortTask = () => {
 		const CLASS_CONTAINER = 'js-sort';
-		const sortBtns = document.getElementById(CLASS_CONTAINER).getElementsByTagName('a');
+		const sortBtns = document.getElementById(CLASS_CONTAINER).getElementsByTagName('button');
 		if (sortBtns.length < 1) {
 			return;
 		}
