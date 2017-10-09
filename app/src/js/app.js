@@ -1,8 +1,8 @@
+import 'babel-polyfill';
+
 /**
  * TO DO アプリ
  */
-import 'babel-polyfill';
-
 const TO_DO_APP = () => {
 	const stage = document.getElementById('stage');
 	const CLASS_NONE = 'js-none';
@@ -37,20 +37,22 @@ const TO_DO_APP = () => {
 			return (result + Num).slice(-digit);
 		},
 
+		/**
+		 * 文字列エスケープ
+		 * @param {String} str
+		 */
 		escapeHtml(str) {
 			if (typeof str !== 'string') {
 				return str;
 			}
-			return str.replace(/[&'`"<>]/g, (match) => {
-				return {
-					'&': '&amp;',
-					"'": '&#x27;',
-					'`': '&#x60;',
-					'"': '&quot;',
-					'<': '&lt;',
-					'>': '&gt;'
-				}[match];
-			});
+			return str.replace(/[&'`"<>]/g, (match) => ({
+				'&': '&amp;',
+				"'": '&#x27;',
+				'`': '&#x60;',
+				'"': '&quot;',
+				'<': '&lt;',
+				'>': '&gt;'
+			}[match]));
 		},
 
 		/**
@@ -71,10 +73,6 @@ const TO_DO_APP = () => {
 				break;
 			}
 			return str;
-		},
-
-		getFormattedToday() {
-			return `${now.getFullYear()}-${utilityFunc.addZeroPadding(now.getMonth() + 1, 2)}-${utilityFunc.addZeroPadding(now.getDate(), 2)}`;
 		}
 	};
 
@@ -84,15 +82,7 @@ const TO_DO_APP = () => {
 		ev: new Event('dataChange'),
 
 		// ステート（直接外部からは参照できない）
-		_stateAll: [
-			// {content: "ご飯を食べる", priority: 3, limit: "2017-10-1", status: "open"},
-			// {content: "お米を食べる", priority: 3, limit: "2017-09-30", status: "open"},
-			// {content: "お米を研ぐ", priority: 1, limit: "", status: "open"},
-			// {content: "歯を磨く", priority: 3, limit: "2017-10-10", status: "open"},
-			// {content: "昼寝する", priority: 1, limit: "2017-10-12", status: "open"},
-			// {content: "トマトジュースを飲む", priority: 2, limit: "", status: "open"},
-			// {content: "映画を見る", priority: 2, limit: "", status: "complete"}
-		],
+		_stateAll: [],
 
 		/**
 		 * ステートへの保存
@@ -143,7 +133,7 @@ const TO_DO_APP = () => {
 				}
 				let valueA = null;
 				let valueB = null;
-				const FormattedToday = utilityFunc.getFormattedToday();
+				const FormattedToday = `${now.getFullYear()}-${utilityFunc.addZeroPadding(now.getMonth() + 1, 2)}-${utilityFunc.addZeroPadding(now.getDate(), 2)}`;
 
 				for (let i = 0, l = ary.length; i < l; i += 1) {
 					if (!Object.prototype.hasOwnProperty.call(a, ary[i]) ||
@@ -192,7 +182,7 @@ const TO_DO_APP = () => {
 
 
 	/**
-	 * 空白（空文字）であるか
+	 * 空白（空文字）であるかチェック
 	 * @param {String} str
 	 */
 	const isBlank = (str) => {
@@ -347,7 +337,6 @@ const TO_DO_APP = () => {
 	const renderTask = () => {
 		// 全データ
 		const dataAll = model.getItem();
-		console.log(dataAll);
 		const ul = document.createElement('ul');
 		let html = '';
 
@@ -544,9 +533,9 @@ const TO_DO_APP = () => {
 			btn.addEventListener('click', (e) => {
 				e.preventDefault();
 				if (e.currentTarget.classList.contains(`${CLASS_CONTAINER}-priority`)) {
-					model.sortItem(['priority', 'limit'], ['', 'asc']);
+					model.sortItem(['status', 'priority', 'limit'], ['', '', 'asc']);
 				} else if (e.currentTarget.classList.contains(`${CLASS_CONTAINER}-limit`)) {
-					model.sortItem(['limit', 'priority'], ['asc', '']);
+					model.sortItem(['status', 'limit', 'priority'], ['', 'asc', '']);
 				}
 			});
 		});
@@ -602,4 +591,3 @@ const TO_DO_APP = () => {
 };
 
 TO_DO_APP();
-
