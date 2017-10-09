@@ -7,6 +7,7 @@ const TO_DO_APP = () => {
 	const stage = document.getElementById('stage');
 	const CLASS_NONE = 'js-none';
 	const now = new Date();
+	const lStorage = localStorage;
 
 	/**
 	 * 汎用的に使える関数群
@@ -99,17 +100,26 @@ const TO_DO_APP = () => {
 		 * @param {*} arg
 		 */
 		setItem(type, arg) {
-			if (type === 'add') {
+			switch (type) {
+			case 'add':
 				this._stateAll.push(arg);
-			} else if (type === 'changeStatus') {
+				break;
+			case 'changeStatus':
 				this._stateAll[arg[0]].status = arg[1] ? 'complete' : 'open';
-			} else if (type === 'edit') {
+				break;
+			case 'edit': {
 				const targetElement = this._stateAll[arg[0]];
 				targetElement.content = arg[1];
 				targetElement.priority = parseInt(arg[2], 10);
 				targetElement.limit = arg[3];
+				break;
 			}
-			//localStorage.hoge = JSON.stringify(this._stateAll);
+			case 'all':
+				this._stateAll = arg;
+				break;
+			default:
+				throw Error('The value of the argument is invalid');
+			}
 			this.dispatcher.dispatchEvent(this.ev);
 		},
 
@@ -558,23 +568,26 @@ const TO_DO_APP = () => {
 	 * 実行
 	 */
 	const start = () => {
+		// カスタムイベントのリスナー登録
+		model.dispatcher.addEventListener('dataChange', () => {
+			statusData.init();
+			render();
+			localStorage.app = JSON.stringify(model.getItem());
+		});
+
 		setInputDateMin();
 
 		// フォームのイベント登録
 		addFormEvent();
 
-		statusData.init();
+		if (lStorage.app) {
+			model.setItem('all', JSON.parse(lStorage.app));
+		}
 
-		// 一時的
-		render();
+		statusData.init();
 
 		moveCompleteTask();
 
-		// カスタムイベントのリスナー登録
-		model.dispatcher.addEventListener('dataChange', () => {
-			statusData.init();
-			render();
-		});
 
 		// モーダルの閉じるイベント登録
 		modal.setCloseEvent();
