@@ -5,76 +5,127 @@
 <meta http-equiv="x-ua-compatible" content="ie=edge">
 <title>TO DO APP | KDE</title>
 <meta name="description" content="TO DO アプリです">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
 <link rel="stylesheet" href="/css/style.css">
 </head>
-<body class="top">
+<body class="bg-light">
 <div id="l-wrapper">
-<header class="m-gHeader">
-	<h1>TO DO APP</h1>
-</header><!-- /.m-gHeader -->
+<div class="container-fluid">
+	<header class="page-header">
+		<h1 class="display-4">TO DO APP</h1>
+	</header><!-- /.m-gHeader -->
+	<div class="row">
+		<div class="col-lg-8 col-xl-9">
+			<div id="stage"></div>
 
-<div id="stage"></div>
-<div class="taskDeleteBtn js-none" id="js-taskDeleteBtn">
-	<button>完了済みのタスクをゴミ箱へ入れる</button>
-</div>
-<div class="sortArea">
-	<h2>並び替え</h2>
-	<ul class="sortBtns" id="js-sort">
-		<li><a href="#" class="js-sort-priority">優先度順</a></li>
-		<li><a href="#" class="js-sort-limit">期限順</a></li>
-	</ul>
-</div>
-<form name="taskForm" id="js-taskForm">
-	<ul>
-		<li>内容： <input type="text" name="content" required></li>
-		<li>優先度： <label><input type="radio" name="priority" value="3" required>高</label>
-			<label><input type="radio" name="priority" value="2" checked>中</label>
-			<label><input type="radio" name="priority" value="1">低</label></li>
-		<li>期限： <input type="date" name="limit"></li>
-	</ul>
-	<ul>
-		<input type="submit" value="追加">
-		<input type="reset" value="クリア">
-	</ul>
-</form><!-- /.taskForm -->
-
-<div class="statusBox" id="js-statusBox">
-	<ul>
-		<li>現在のタスク総数： <span class="totalCount">-</span> 個</li>
-		<li>残タスク数： <span class="leftCount">-</span> 個</li>
-		<li>完了済みタスク数： <span class="completeCount">-</span> 個</li>
-		<li>完遂率： <span class="completionRate">-</span> ％</li>
-	</ul>
-</div>
-
-<div class="modal js-none" id="js-modal">
-	<div class="modal-container">
-		<div class="modal-close">×</div>
-		<dl class="m-contentBox">
-			<dt>編集</dt>
-			<dd>
-				<form name="taskEditForm" id="js-taskEdit">
-					<ul>
-						<li>内容： <input type="text" name="content" required></li>
-						<li>優先度： <label><input type="radio" name="priority" value="3" required>高</label>
-							<label><input type="radio" name="priority" value="2">中</label>
-							<label><input type="radio" name="priority" value="1">低</label></li>
-						<li>期限： <input type="date" name="limit"></li>
-					</ul>
-					<ul>
-						<input type="submit" value="完了">
-						<input type="reset" value="クリア">
-					</ul>
+			<div class="fixed-bottom bg-dark">
+				<form name="taskForm" id="js-taskForm" >
+					<div class="container-fluid py-3">
+						<div class="row">
+							<div class="col-lg-5 col-xl-7 mb-2 mb-lg-0">
+									<div class="mb-1 small text-white">内容<span class="text-danger small ml-2">※必須</span></div>
+									<div>
+										<input type="text" name="content" class="form-control" required placeholder="タスクを入力してください">
+									</div>
+							</div>
+							<div class="col-auto">
+								<div class="mb-1 small text-white">優先度<span class="text-danger small ml-2">※必須</span></div>
+								<div class="text-white">
+									<label class="custom-control custom-radio">
+										<input type="radio" name="priority" value="3" class="custom-control-input" required>
+										<span class="custom-control-indicator"></span>
+										<span class="custom-control-description">高</span>
+									</label>
+									<label class="custom-control custom-radio">
+										<input type="radio" name="priority" value="2" class="custom-control-input" checked>
+										<span class="custom-control-indicator"></span>
+										<span class="custom-control-description">中</span>
+									</label>
+									<label class="custom-control custom-radio">
+										<input type="radio" name="priority" value="1" class="custom-control-input">
+										<span class="custom-control-indicator"></span>
+										<span class="custom-control-description">低</span>
+									</label>
+								</div>
+							</div>
+							<div class="col-auto">
+								<div class="mb-1 small text-white">期限</div>
+								<input type="date" name="limit" class="form-control">
+							</div>
+							<div class="col-auto align-self-center">
+								<input type="submit" value="追加" class="btn btn-primary">
+								<input type="reset" value="クリア" class="btn btn-secondary">
+							</div>
+						</div>
+					</div><!-- /.container -->
 				</form><!-- /.taskForm -->
-			</dd>
-		</dl>
+			</div>
+		</div>
+
+		<div class="col-lg-4 col-xl-3">
+			<div class="sticky-top">
+				<div class="statusBox" id="js-statusBox">
+					<table class="table table-bordered">
+						<tr>
+							<th>現在のタスク総数</th>
+							<td><span class="totalCount">-</span> 個</td>
+						</tr>
+						<tr>
+							<th>残タスク数</th>
+							<td><span class="leftCount">-</span> 個</td>
+						</tr>
+						<tr>
+							<th>完了済みタスク数</th>
+							<td><span class="completeCount">-</span> 個
+								<div class="taskDeleteBtn js-none" id="js-taskDeleteBtn">
+									<a href="#" class="small">完了済みタスクを削除</a>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<th>完遂率</th>
+							<td><span class="completionRate">-</span> ％</td>
+						</tr>
+					</table>
+				</div><!-- /.statusBox -->
+				<div class="sortArea">
+					<h2 class="h6 font-weight-bold">タスクの並び替え</h2>
+					<div class="btn-group sortBtns" id="js-sort">
+						<button class="btn btn-outline-secondary js-sort-priority">優先度順</button>
+						<button class="btn btn-outline-secondary js-sort-limit">期限順</button>
+					</div>
+				</div><!-- /.sortArea -->
+			</div>
+		</div>
+	</div><!-- /.row -->
+
+	<div class="modal js-none" id="js-modal">
+		<div class="modal-container">
+			<div class="modal-close">×</div>
+			<dl class="m-contentBox">
+				<dt>編集</dt>
+				<dd>
+					<form name="taskEditForm" id="js-taskEdit">
+						<ul>
+							<li>内容： <input type="text" name="content" required></li>
+							<li>優先度： <label><input type="radio" name="priority" value="3" required>高</label>
+								<label><input type="radio" name="priority" value="2">中</label>
+								<label><input type="radio" name="priority" value="1">低</label></li>
+							<li>期限： <input type="date" name="limit"></li>
+						</ul>
+						<ul>
+							<input type="submit" value="完了">
+							<input type="reset" value="クリア">
+						</ul>
+					</form><!-- /.taskForm -->
+				</dd>
+			</dl>
+		</div>
+		<div class="modal-bg"></div>
 	</div>
-	<div class="modal-bg"></div>
-</div>
-
-
+</div><!-- /.container-fluid -->
 </div><!-- /#l-wrapper -->
 <script src="/js/app.min.js"></script>
 </body>
