@@ -441,67 +441,72 @@ const TO_DO_APP = () => {
 		});
 	};
 
-	const modal = {
-		wrapper: document.getElementById('js-modal'),
-		form: document.forms['js-taskEdit'],
-		editBtnIndex: null,
+	/**
+	 * モーダルモジュール
+	 */
+	const modal = (() => {
+		const _wrapper = document.getElementById('js-modal');
+		const _modalBg = _wrapper.querySelector('.modal-bg');
+		const _modalCloseBtn = _wrapper.querySelector('.js-modal-close');
+		const _form = document.forms['js-taskEdit'];
 
 		/**
 		 * モーダルを開く
+		 * @public
 		 */
-		open() {
-			this.wrapper.classList.remove(CLASS_NONE);
-		},
+		const open = () => {
+			_wrapper.style.display = 'block';
+		};
 
 		/**
 		 * モーダルを閉じる
+		 * @public
 		 */
-		close() {
-			this.wrapper.classList.add(CLASS_NONE);
-		},
-
-		/**
-		 * モーダルを閉じるイベントを登録
-		 */
-		setCloseEvent() {
-			const modalBg = this.wrapper.querySelector('.modal-bg');
-			const modalCloseBtn = this.wrapper.querySelector('.modal-close');
-			[modalBg, modalCloseBtn].forEach((item) => {
-				item.addEventListener('click', () => {
-					this.close();
-				});
-			});
-		},
+		const close = () => {
+			_wrapper.style.display = 'none';
+		};
 
 		/**
 		 * モーダル内のフォームを初期化
+		 * @public
 		 */
-		initForm(index) {
+		const initForm = (index) => {
 			const itemState = model.getItem(index);
-			const form = this.form;
-			form.querySelector('input[type="text"]').value = itemState.content;
-			form.querySelector('input[type="date"]').value = itemState.limit;
-			Array.prototype.slice.call(form.querySelectorAll('input[type="radio"]')).forEach((item) => {
+			_form.querySelector('input[type="text"]').value = itemState.content;
+			_form.querySelector('input[type="date"]').value = itemState.limit;
+			Array.prototype.slice.call(_form.querySelectorAll('input[type="radio"]')).forEach((item) => {
 				if (+item.value === +itemState.priority) {
 					item.checked = true;
 				} else if (item.checked) {
 					item.checked = false;
 				}
 			});
-		},
+		};
+
+		/**
+		 * モーダルを閉じるイベントを登録
+		 * @private
+		 */
+		const _setCloseEvent = () => {
+			[_modalBg, _modalCloseBtn].forEach((item) => {
+				item.addEventListener('click', () => {
+					close();
+				});
+			});
+		};
 
 		/**
 		 * モーダル内のフォームのイベント登録
 		 * 		編集された内容にステートを更新
+		 * @private
 		 */
-		setEditFormEvent() {
-			const form = this.form;
-			form.addEventListener('submit', (e) => {
+		const _setEditFormEvent = () => {
+			_form.addEventListener('submit', (e) => {
 				e.preventDefault();
-				const index = this.editBtnIndex;
-				let content = form.content.value;
-				const priority = form.priority.value;
-				const limit = form.limit.value;
+				const index = modal.editBtnIndex;
+				let content = _form.content.value;
+				const priority = _form.priority.value;
+				const limit = _form.limit.value;
 				if (isBlank(content)) {
 					alert('内容を入力してください');
 					return;
@@ -509,10 +514,37 @@ const TO_DO_APP = () => {
 				content = content.trim();
 				model.setItem('edit', [index, content, priority, limit]);
 				// モーダル閉じる
-				this.close();
+				close();
 			});
-		}
-	};
+		};
+
+		/**
+		 * 初期設定
+		 * @private
+		 */
+		const _init = () => {
+			_modalBg.setAttribute('style', `
+				position: fixed;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: 0;
+				z-index: -1;
+				background-color: rgba(0,0,0,.5);
+			`);
+			_setCloseEvent();
+			_setEditFormEvent();
+		};
+
+		_init();
+
+		return {
+			editBtnIndex: null,
+			open,
+			close,
+			initForm
+		};
+	})();
 
 	/**
 	 * 編集ボタンへのイベント登録
@@ -595,13 +627,6 @@ const TO_DO_APP = () => {
 		statusData.init();
 
 		moveCompleteTask();
-
-
-		// モーダルの閉じるイベント登録
-		modal.setCloseEvent();
-
-		// モーダルのフォームイベント登録
-		modal.setEditFormEvent();
 
 		sortTask();
 	};
