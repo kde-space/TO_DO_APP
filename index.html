@@ -25,13 +25,13 @@
 					<div class="container-fluid py-3">
 						<div class="row">
 							<div class="col-lg-5 col-xl-7 mb-2 mb-lg-0">
-									<div class="mb-1 small text-white">内容<span class="text-danger small ml-2">※必須</span></div>
+									<div class="mb-1 small text-white">内容<span class="badge badge-danger ml-2">※必須</span></div>
 									<div>
 										<input type="text" name="content" class="form-control" required placeholder="タスクを入力してください">
 									</div>
 							</div>
 							<div class="col-auto">
-								<div class="mb-1 small text-white">優先度<span class="text-danger small ml-2">※必須</span></div>
+								<div class="mb-1 small text-white">優先度<span class="badge badge-danger ml-2">※必須</span></div>
 								<div class="text-white">
 									<label class="custom-control custom-radio">
 										<input type="radio" name="priority" value="3" class="custom-control-input" required>
@@ -101,27 +101,47 @@
 		</div>
 	</div><!-- /.row -->
 
-	<div class="modal js-none" id="js-modal">
-		<div class="modal-container">
-			<div class="modal-close">×</div>
-			<dl class="m-contentBox">
-				<dt>編集</dt>
-				<dd>
-					<form name="taskEditForm" id="js-taskEdit">
-						<ul>
-							<li>内容： <input type="text" name="content" required></li>
-							<li>優先度： <label><input type="radio" name="priority" value="3" required>高</label>
-								<label><input type="radio" name="priority" value="2">中</label>
-								<label><input type="radio" name="priority" value="1">低</label></li>
-							<li>期限： <input type="date" name="limit"></li>
+	<div class="modal" id="js-modal">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">編集</h5>
+					<button type="button" class="close js-modal-close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<form name="taskEditForm" id="js-taskEdit">
+					<div class="modal-body">
+						<ul class="list-unstyled">
+							<li>内容 <input type="text" name="content" class="form-control" required></li>
+							<li>優先度
+								<div>
+									<label class="custom-control custom-radio">
+										<input type="radio" name="priority" value="3" class="custom-control-input" required>
+										<span class="custom-control-indicator"></span>
+										<span class="custom-control-description">高</span>
+									</label>
+									<label class="custom-control custom-radio">
+										<input type="radio" name="priority" value="2" class="custom-control-input">
+										<span class="custom-control-indicator"></span>
+										<span class="custom-control-description">中</span>
+									</label>
+									<label class="custom-control custom-radio">
+										<input type="radio" name="priority" value="1" class="custom-control-input">
+										<span class="custom-control-indicator"></span>
+										<span class="custom-control-description">低</span>
+									</label>
+								</div>
+							</li>
+							<li>期限 <input type="date" name="limit" class="form-control"></li>
 						</ul>
-						<ul>
-							<input type="submit" value="完了">
-							<input type="reset" value="クリア">
-						</ul>
-					</form><!-- /.taskForm -->
-				</dd>
-			</dl>
+					</div>
+					<div class="modal-footer">
+						<input type="submit" class="btn btn-primary" value="完了">
+						<input type="reset" class="btn btn-secondary" value="クリア">
+					</div>
+				</form><!-- /.taskForm -->
+			</div>
 		</div>
 		<div class="modal-bg"></div>
 	</div>
