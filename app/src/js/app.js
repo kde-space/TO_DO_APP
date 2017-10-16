@@ -615,6 +615,7 @@ const TO_DO_APP = () => {
 			const res = confirm('本当に全タスクを削除して良いですか？ ※復元できません');
 			if (res) {
 				model.deleteAllItem();
+				lStorage.removeItem('app');
 			}
 		});
 	};
