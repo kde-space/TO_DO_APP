@@ -177,6 +177,14 @@ const TO_DO_APP = () => {
 				return false;
 			});
 			this.dispatcher.dispatchEvent(this.ev);
+		},
+
+		/**
+		 * 全削除
+		 */
+		deleteAllItem() {
+			this._stateAll.length = 0;
+			this.dispatcher.dispatchEvent(this.ev);
 		}
 	};
 
@@ -566,6 +574,9 @@ const TO_DO_APP = () => {
 	 */
 	const moveCompleteTask = () => {
 		const deleteBtn = document.getElementById('js-taskDeleteBtn').firstElementChild;
+		if (!deleteBtn) {
+			return;
+		}
 		deleteBtn.addEventListener('click', () => {
 			model.removeCompletedItem();
 		});
@@ -574,7 +585,7 @@ const TO_DO_APP = () => {
 	/**
 	 * 並び替え
 	 */
-	const sortTask = () => {
+	const setSortTask = () => {
 		const CLASS_CONTAINER = 'js-sort';
 		const sortBtns = document.getElementById(CLASS_CONTAINER).getElementsByTagName('button');
 		if (sortBtns.length < 1) {
@@ -592,6 +603,21 @@ const TO_DO_APP = () => {
 		});
 	};
 
+	/**
+	 * 全タスク削除
+	 */
+	const setDeleteAllTask = () => {
+		const deleteBtn = document.getElementById('js-removeAllItem');
+		if (!deleteBtn) {
+			return;
+		}
+		deleteBtn.addEventListener('click', () => {
+			const res = confirm('本当に全タスクを削除して良いですか？ ※復元できません');
+			if (res) {
+				model.deleteAllItem();
+			}
+		});
+	};
 
 	/**
 	 * 画面の描画
@@ -628,7 +654,8 @@ const TO_DO_APP = () => {
 
 		moveCompleteTask();
 
-		sortTask();
+		setSortTask();
+		setDeleteAllTask();
 	};
 
 	start();
