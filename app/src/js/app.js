@@ -12,7 +12,7 @@ const TO_DO_APP = () => {
 	/**
 	 * 汎用的に使える関数群
 	 */
-	const utilityFunc = {
+	const utilFunc = {
 		/**
 		 * 中身を空にする
 		 * @param {Node} target 中身を空にするオブジェクト
@@ -27,7 +27,7 @@ const TO_DO_APP = () => {
 		 * ゼロパディング
 		 * @param {Number} Num ゼロパティングする値
 		 * @param {Number} digit 最終的な桁数
-		 * @return {String}
+		 * @return {String} 数値文字列
 		 */
 		addZeroPadding(Num, digit) {
 			let result = '';
@@ -56,6 +56,17 @@ const TO_DO_APP = () => {
 		},
 
 		/**
+		 * 空白（空文字）であるかチェック
+		 * @param {String} str
+		 */
+		isBlank(str) {
+			if (/\S/.test(str)) {
+				return false;
+			}
+			return true;
+		},
+
+		/**
 		 * 優先度を示す文字列を表示用に変換
 		 * @param {Number} priority 優先度を示す数値
 		 */
@@ -75,6 +86,8 @@ const TO_DO_APP = () => {
 			return str;
 		}
 	};
+
+	const formattedToday = `${now.getFullYear()}-${utilFunc.addZeroPadding(now.getMonth() + 1, 2)}-${utilFunc.addZeroPadding(now.getDate(), 2)}`;
 
 	// Model管理
 	const model = {
@@ -133,7 +146,6 @@ const TO_DO_APP = () => {
 				}
 				let valueA = null;
 				let valueB = null;
-				const FormattedToday = `${now.getFullYear()}-${utilityFunc.addZeroPadding(now.getMonth() + 1, 2)}-${utilityFunc.addZeroPadding(now.getDate(), 2)}`;
 
 				for (let i = 0, l = ary.length; i < l; i += 1) {
 					if (!Object.prototype.hasOwnProperty.call(a, ary[i]) ||
@@ -145,8 +157,8 @@ const TO_DO_APP = () => {
 
 					// 期限が空の場合は今日の日付を一時的に設定
 					if (ary[i] === 'limit') {
-						valueA = !valueA ? FormattedToday : valueA;
-						valueB = !valueB ? FormattedToday : valueB;
+						valueA = !valueA ? formattedToday : valueA;
+						valueB = !valueB ? formattedToday : valueB;
 					}
 
 					if (valueA < valueB) {
@@ -188,18 +200,6 @@ const TO_DO_APP = () => {
 		}
 	};
 
-
-	/**
-	 * 空白（空文字）であるかチェック
-	 * @param {String} str
-	 */
-	const isBlank = (str) => {
-		if (/\S/.test(str)) {
-			return false;
-		}
-		return true;
-	};
-
 	/**
 	 * フォームのイベント登録
 	 */
@@ -213,7 +213,7 @@ const TO_DO_APP = () => {
 				limit: form.limit.value,
 				status: 'open'
 			};
-			if (isBlank(task.content)) {
+			if (utilFunc.isBlank(task.content)) {
 				alert('内容を入力してください');
 				form.reset();
 				return;
@@ -232,7 +232,6 @@ const TO_DO_APP = () => {
 		if (dateInput.legnth < 1) {
 			return;
 		}
-		const formattedToday = `${now.getFullYear()}-${utilityFunc.addZeroPadding(now.getMonth() + 1, 2)}-${utilityFunc.addZeroPadding(now.getDate(), 2)}`;
 		Array.prototype.slice.call(dateInput).forEach((input) => {
 			input.setAttribute('min', formattedToday);
 		});
@@ -345,6 +344,10 @@ const TO_DO_APP = () => {
 	const renderTask = () => {
 		// 全データ
 		const dataAll = model.getItem();
+		if (dataAll.length <= 0) {
+			showInfo('<div class="alert alert-info" role="alert">ページ下部のフォームからタスクを入力してください</div>');
+			return;
+		}
 		const ul = document.createElement('ul');
 		ul.classList = 'm-0 p-0';
 		let html = '';
@@ -359,14 +362,14 @@ const TO_DO_APP = () => {
 			html += `
 				<li class="card mb-2 taskItem is-${dataItem.priority}${dataItem.status === 'complete' ? ' is-complete' : ''}${statusAgainstlimit === 'over' ? ' is-over' : ''}">
 					<div class="p-3">
-						<p class="font-weight-bold my-0 taskContent">${utilityFunc.escapeHtml(txt)}</p>
+						<p class="font-weight-bold my-0 taskContent">${utilFunc.escapeHtml(txt)}</p>
 					</div>
 					<div class="border border-right-0 border-bottom-0 border-left-0 bg-light taskStatus small">
 						<div class="row justify-content-between align-items-center py-2 px-3">
 							<div class="col-auto row">
 								<dl class="col-auto mb-0">
 									<dt class="d-inline-block">優先度</dt>
-									<dd class="d-inline-block">${utilityFunc.getPriorityStr(+dataItem.priority)}</dd>
+									<dd class="d-inline-block">${utilFunc.getPriorityStr(+dataItem.priority)}</dd>
 								</dl>
 								${dataItem.limit ? `
 								<dl class="col-auto mb-0">
@@ -395,7 +398,7 @@ const TO_DO_APP = () => {
 			`;
 		});
 		ul.innerHTML = html;
-		utilityFunc.emptyHtml(stage);
+		utilFunc.emptyHtml(stage);
 		stage.appendChild(ul);
 	};
 
@@ -515,7 +518,7 @@ const TO_DO_APP = () => {
 				let content = _form.content.value;
 				const priority = _form.priority.value;
 				const limit = _form.limit.value;
-				if (isBlank(content)) {
+				if (utilFunc.isBlank(content)) {
 					alert('内容を入力してください');
 					return;
 				}
@@ -568,11 +571,10 @@ const TO_DO_APP = () => {
 		});
 	};
 
-
 	/**
 	 * 完了済みタスクをゴミ箱へ移動
 	 */
-	const moveCompleteTask = () => {
+	const setDeleteCompleteTask = () => {
 		const deleteBtn = document.getElementById('js-taskDeleteBtn').firstElementChild;
 		if (!deleteBtn) {
 			return;
@@ -631,30 +633,40 @@ const TO_DO_APP = () => {
 		addEditEvent();
 	};
 
-	/**
-	 * 実行
-	 */
-	const start = () => {
+	const showInfo = (html) => {
+		stage.innerHTML = html;
+	};
+
+	const showFirstMainContent = () => {
+		if (lStorage.app && lStorage.app !== '[]') {
+			model.setItem('all', JSON.parse(lStorage.app));
+		} else {
+			showInfo('<div class="alert alert-info" role="alert">ページ下部のフォームからタスクを入力してください</div>');
+		}
+	};
+
+	const addListeners = () => {
 		// カスタムイベントのリスナー登録
 		model.dispatcher.addEventListener('dataChange', () => {
 			statusData.init();
 			render();
 			localStorage.app = JSON.stringify(model.getItem());
 		});
+	};
 
+	/**
+	 * 実行
+	 */
+	const start = () => {
+		addListeners();
+		showFirstMainContent();
 		setInputDateMin();
 
 		// フォームのイベント登録
 		addFormEvent();
 
-		if (lStorage.app) {
-			model.setItem('all', JSON.parse(lStorage.app));
-		}
-
 		statusData.init();
-
-		moveCompleteTask();
-
+		setDeleteCompleteTask();
 		setSortTask();
 		setDeleteAllTask();
 	};
