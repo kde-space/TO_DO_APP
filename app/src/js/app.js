@@ -664,7 +664,6 @@ const TO_DO_APP = () => {
 
 		// フォームのイベント登録
 		addFormEvent();
-
 		statusData.init();
 		setDeleteCompleteTask();
 		setSortTask();
