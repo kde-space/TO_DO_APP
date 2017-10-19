@@ -89,6 +89,10 @@ const TO_DO_APP = () => {
 
 	const formattedToday = `${now.getFullYear()}-${utilFunc.addZeroPadding(now.getMonth() + 1, 2)}-${utilFunc.addZeroPadding(now.getDate(), 2)}`;
 
+	const showInfo = (html) => {
+		stage.innerHTML = html;
+	};
+
 	// Model管理
 	const model = {
 		dispatcher: document.createElement('div'),
@@ -323,7 +327,7 @@ const TO_DO_APP = () => {
 			return '期限が過ぎています';
 		}
 		case 'thatday': {
-			return '期限当日です';
+			return '期限当日です!!';
 		}
 		case 'notyet': {
 			if (!endDateObj || !nowDateObj) {
@@ -361,11 +365,11 @@ const TO_DO_APP = () => {
 
 			html += `
 				<li class="card mb-2 taskItem is-${dataItem.priority}${dataItem.status === 'complete' ? ' is-complete' : ''}${statusAgainstlimit === 'over' ? ' is-over' : ''}">
-					<div class="p-3">
+					<div class="py-1 px-3">
 						<p class="font-weight-bold my-0 taskContent">${utilFunc.escapeHtml(txt)}</p>
 					</div>
 					<div class="border border-right-0 border-bottom-0 border-left-0 bg-light taskStatus small">
-						<div class="row justify-content-between align-items-center py-2 px-3">
+						<div class="row justify-content-between align-items-center py-1 px-3">
 							<div class="col-auto row">
 								<dl class="col-auto mb-0">
 									<dt class="d-inline-block">優先度</dt>
@@ -631,10 +635,6 @@ const TO_DO_APP = () => {
 		toggleShowTaskDeleteBtn();
 		addCompleteEvent();
 		addEditEvent();
-	};
-
-	const showInfo = (html) => {
-		stage.innerHTML = html;
 	};
 
 	const showFirstMainContent = () => {
