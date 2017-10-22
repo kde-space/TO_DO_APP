@@ -1,14 +1,25 @@
 @charset 'utf-8';
 
-.headerTitle {
-	font-weight: lighter;
-	font-size: 3.5rem;
-}
 .js-none {
 	display: none !important;
 }
 .js-active {
 	display: block !important;
+}
+
+.headerTitle {
+	font-weight: lighter;
+	font-size: 3.5rem;
+
+	@media (max-width: 575px) {
+		font-size: 2.5rem;
+	}
+}
+
+.taskContainer {
+	@media (max-width: 991px) {
+		margin-bottom: 2rem;
+	}
 }
 
 .taskItem {
@@ -37,6 +48,23 @@
 	}
 }
 
+form[name="taskForm"] {
+	@media (max-width: 767px) {
+		display: none;
+	}
+}
+
+.mainContainer {
+	@media (max-width: 991px) {
+		padding-bottom: 200px;
+	}
+	@media (max-width: 767px) {
+		padding-bottom: 100px;
+	}
+	@media (min-width: 992px) {
+		padding-bottom: 150px;
+	}
+}
 
 %pointer {
 	cursor: pointer;
@@ -49,33 +77,3 @@
 label {
 	@extend %pointer;
 }
-
-@media (max-width: 575px) {
-	.headerTitle {
-		font-size: 2.5rem;
-	}
-}
-@media (max-width: 575px) {
-	.headerTitle {
-		font-size: 2.5rem;
-	}
-}
-@media (max-width: 767px) {
-	form[name="taskForm"] {
-		display: none;
-	}
-}
-@media (max-width: 991px) {
-	.taskContainer {
-		margin-bottom: 2rem;
-	}
-	.mainContainer {
-		padding-bottom: 200px;
-	}
-}
-@media (min-width: 992px) {
-	.mainContainer {
-		padding-bottom: 150px;
-	}
-}
-
