@@ -8,6 +8,7 @@ const TO_DO_APP = () => {
 	const CLASS_NONE = 'js-none';
 	const now = new Date();
 	const lStorage = localStorage;
+	const taskForm = document.getElementById('js-taskForm');
 
 	/**
 	 * 汎用的に使える関数群
@@ -161,8 +162,8 @@ const TO_DO_APP = () => {
 
 					// 期限が空の場合は今日の日付を一時的に設定
 					if (ary[i] === 'limit') {
-						valueA = !valueA ? formattedToday : valueA;
-						valueB = !valueB ? formattedToday : valueB;
+						valueA = !valueA ? `${formattedToday}-1` : valueA;
+						valueB = !valueB ? `${formattedToday}-1` : valueB;
 					}
 
 					if (valueA < valueB) {
@@ -208,23 +209,22 @@ const TO_DO_APP = () => {
 	 * フォームのイベント登録
 	 */
 	const addFormEvent = () => {
-		const form = document.forms['js-taskForm'];
-		form.addEventListener('submit', (e) => {
+		taskForm.addEventListener('submit', (e) => {
 			e.preventDefault();
 			const task = {
-				content: form.content.value,
-				priority: form.priority.value,
-				limit: form.limit.value,
+				content: taskForm.content.value,
+				priority: taskForm.priority.value,
+				limit: taskForm.limit.value,
 				status: 'open'
 			};
 			if (utilFunc.isBlank(task.content)) {
 				alert('内容を入力してください');
-				form.reset();
+				taskForm.reset();
 				return;
 			}
 			task.content = task.content.trim();
 			model.setItem('add', task);
-			form.reset();
+			taskForm.reset();
 		});
 	};
 
@@ -324,10 +324,10 @@ const TO_DO_APP = () => {
 	const getShowHtmlAgainstlimit = (status, endDateObj, nowDateObj) => {
 		switch (status) {
 		case 'over': {
-			return '期限が過ぎています';
+			return '期限が過ぎています!!';
 		}
 		case 'thatday': {
-			return '期限当日です!!';
+			return '期限当日です!';
 		}
 		case 'notyet': {
 			if (!endDateObj || !nowDateObj) {
@@ -368,7 +368,7 @@ const TO_DO_APP = () => {
 					<div class="py-1 px-3">
 						<p class="font-weight-bold my-0 taskContent">${utilFunc.escapeHtml(txt)}</p>
 					</div>
-					<div class="border border-right-0 border-bottom-0 border-left-0 bg-light taskStatus small">
+					<div class="taskStatus small">
 						<div class="row justify-content-between align-items-center py-1 px-3">
 							<div class="col-auto row">
 								<dl class="col-auto mb-0">
@@ -378,7 +378,7 @@ const TO_DO_APP = () => {
 								${dataItem.limit ? `
 								<dl class="col-auto mb-0">
 									<dt class="d-inline-block">期限</dt>
-									<dd class="d-inline-block">${dataItem.limit}<span class="text-secondary ml-2">${htmlAgainstlimit}</span></dd>
+									<dd class="d-inline-block">${dataItem.limit}<span class="ml-3">【${htmlAgainstlimit}】</span></dd>
 								</dl>
 								` : ''}
 							</div>
@@ -654,6 +654,41 @@ const TO_DO_APP = () => {
 		});
 	};
 
+	const setToggleShowTaskform = () => {
+		const btn = document.getElementById('js-showTaskformBtn');
+		const container = document.querySelector('.mainContainer');
+		if (!btn) {
+			return;
+		}
+		let flgOpen = false;
+		const classToggleBtn = ['btn-primary', 'btn-secondary'];
+		const classToggleContainer = 'is-formOpen';
+		const textBtnBefore = btn.textContent;
+		const textBtnAfter = 'フォームを隠す';
+		const CLASS_ACTIVE = 'js-active';
+		const showForm = () => {
+			btn.textContent = textBtnAfter;
+			btn.classList.remove(classToggleBtn[0]);
+			btn.classList.add(classToggleBtn[1]);
+			taskForm.classList.add(CLASS_ACTIVE);
+			container.classList.add(classToggleContainer);
+			flgOpen = true;
+		};
+		const closeForm = () => {
+			btn.textContent = textBtnBefore;
+			btn.classList.remove(classToggleBtn[1]);
+			btn.classList.add(classToggleBtn[0]);
+			taskForm.classList.remove(CLASS_ACTIVE);
+			container.classList.remove(classToggleContainer);
+			flgOpen = false;
+		};
+
+		btn.addEventListener('click', (e) => {
+			e.preventDefault();
+			flgOpen ? closeForm() : showForm();
+		});
+	};
+
 	/**
 	 * 実行
 	 */
@@ -668,6 +703,7 @@ const TO_DO_APP = () => {
 		setDeleteCompleteTask();
 		setSortTask();
 		setDeleteAllTask();
+		setToggleShowTaskform();
 	};
 
 	start();

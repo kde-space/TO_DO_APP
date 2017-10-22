@@ -1,26 +1,34 @@
 @charset 'utf-8';
 
+.headerTitle {
+	font-weight: lighter;
+	font-size: 3.5rem;
+}
 .js-none {
 	display: none !important;
 }
+.js-active {
+	display: block !important;
+}
 
 .taskItem {
+	.taskStatus {
+		border-top: 1px solid rgba(#000, .05);
+		background-color: rgba(#000, .03);
+	}
 	&.is-3 {
-		border-left-color: #dc3545;
-		border-left-width: 5px;
+		background-color: #fff6db;
 	}
 	&.is-2 {
-		border-left-color: #868e96;
-		border-left-width: 5px;
+		// background-color: lighten(#dc3545, 30%);
 	}
 	&.is-1 {
-		border-left-color: #28a745;
-		border-left-width: 5px;
+		background-color: #eefcff;
 	}
 	&.is-over {
 		border-color: rgba(0,0,0,.125);
 		border-left-width: 1px;
-		background-color: #dc3545;
+		background-color: #f8d7da;
 	}
 	&.is-complete {
 		border-color: rgba(0,0,0,.125);
@@ -28,3 +36,46 @@
 		background-color: #aaa;
 	}
 }
+
+
+%pointer {
+	cursor: pointer;
+}
+
+.btn {
+	@extend %pointer;
+}
+
+label {
+	@extend %pointer;
+}
+
+@media (max-width: 575px) {
+	.headerTitle {
+		font-size: 2.5rem;
+	}
+}
+@media (max-width: 575px) {
+	.headerTitle {
+		font-size: 2.5rem;
+	}
+}
+@media (max-width: 767px) {
+	form[name="taskForm"] {
+		display: none;
+	}
+}
+@media (max-width: 991px) {
+	.taskContainer {
+		margin-bottom: 2rem;
+	}
+	.mainContainer {
+		padding-bottom: 200px;
+	}
+}
+@media (min-width: 992px) {
+	.mainContainer {
+		padding-bottom: 150px;
+	}
+}
+

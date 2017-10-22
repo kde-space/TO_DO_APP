@@ -22,6 +22,7 @@
         "import/first": "off",
         "no-underscore-dangle": "off",
         "arrow-parens": ["error", "always"],
-        "no-param-reassign": ["error", { "props": false }]
+        "no-param-reassign": ["error", { "props": false }],
+        "no-unused-expressions": ["error", { "allowTernary": true }]
     }
 }

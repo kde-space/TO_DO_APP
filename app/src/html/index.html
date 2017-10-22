@@ -13,50 +13,52 @@
 <body class="bg-light">
 <div id="l-wrapper">
 <div class="container-fluid">
-	<header class="page-header">
-		<h1 class="display-4">TO DO APP</h1>
-	</header><!-- /.m-gHeader -->
-	<div class="row">
-		<div class="col-lg-8 col-xl-9">
+	<header class="header">
+		<h1 class="headerTitle">TO DO APP</h1>
+	</header><!-- /.header -->
+	<div class="row mainContainer">
+		<div class="col-md-8 col-xl-9 taskContainer">
 			<div id="stage"></div>
-
 			<div class="fixed-bottom bg-dark">
-				<form name="taskForm" id="js-taskForm" >
+				<div class="btn btn-primary d-block m-3 d-md-none" id="js-showTaskformBtn">タスクを入力する</div>
+				<form name="taskForm" id="js-taskForm">
 					<div class="container-fluid py-3">
 						<div class="row">
-							<div class="col-lg-5 col-xl-7 mb-2 mb-lg-0">
+							<div class="col-lg-5 mb-2 mb-lg-0">
 									<div class="mb-1 small text-white">内容<span class="badge badge-danger ml-2">※必須</span></div>
 									<div>
 										<input type="text" name="content" class="form-control" required placeholder="タスクを入力してください">
 									</div>
 							</div>
-							<div class="col-auto">
-								<div class="mb-1 small text-white">優先度<span class="badge badge-danger ml-2">※必須</span></div>
-								<div class="text-white">
-									<label class="custom-control custom-radio">
-										<input type="radio" name="priority" value="3" class="custom-control-input" required>
-										<span class="custom-control-indicator"></span>
-										<span class="custom-control-description">高</span>
-									</label>
-									<label class="custom-control custom-radio">
-										<input type="radio" name="priority" value="2" class="custom-control-input" checked>
-										<span class="custom-control-indicator"></span>
-										<span class="custom-control-description">中</span>
-									</label>
-									<label class="custom-control custom-radio">
-										<input type="radio" name="priority" value="1" class="custom-control-input">
-										<span class="custom-control-indicator"></span>
-										<span class="custom-control-description">低</span>
-									</label>
+							<div class="col-lg-7 row">
+								<div class="col-auto">
+									<div class="mb-1 small text-white">優先度<span class="badge badge-danger ml-2">※必須</span></div>
+									<div class="text-white">
+										<label class="custom-control custom-radio">
+											<input type="radio" name="priority" value="3" class="custom-control-input" required>
+											<span class="custom-control-indicator"></span>
+											<span class="custom-control-description">高</span>
+										</label>
+										<label class="custom-control custom-radio">
+											<input type="radio" name="priority" value="2" class="custom-control-input" checked>
+											<span class="custom-control-indicator"></span>
+											<span class="custom-control-description">中</span>
+										</label>
+										<label class="custom-control custom-radio">
+											<input type="radio" name="priority" value="1" class="custom-control-input">
+											<span class="custom-control-indicator"></span>
+											<span class="custom-control-description">低</span>
+										</label>
+									</div>
 								</div>
-							</div>
-							<div class="col-auto">
-								<div class="mb-1 small text-white">期限</div>
-								<input type="date" name="limit" class="form-control">
-							</div>
-							<div class="col-auto align-self-center">
-								<input type="submit" value="追加" class="btn btn-primary">
-								<input type="reset" value="クリア" class="btn btn-secondary">
+								<div class="col-auto">
+									<div class="mb-1 small text-white">期限</div>
+									<input type="date" name="limit" class="form-control">
+								</div>
+								<div class="col-auto align-self-center mt-3 mt-lg-0">
+									<input type="submit" value="追加" class="btn btn-primary">
+									<input type="reset" value="クリア" class="btn btn-secondary">
+								</div>
 							</div>
 						</div>
 					</div><!-- /.container -->
@@ -64,9 +66,9 @@
 			</div>
 		</div>
 
-		<div class="col-lg-4 col-xl-3">
+		<div class="col-md-4 col-xl-3">
 			<div class="sticky-top">
-				<div class="statusBox" id="js-statusBox">
+				<div class="statusBox mb-4" id="js-statusBox">
 					<table class="table table-bordered">
 						<tr>
 							<th>現在のタスク総数</th>
@@ -92,17 +94,17 @@
 				</div><!-- /.statusBox -->
 				<div class="sortArea mb-3">
 					<h2 class="h6 font-weight-bold">タスクの並び替え</h2>
-					<div class="btn-group sortBtns" id="js-sort">
-						<button class="btn btn-outline-secondary js-sort-priority">優先度順</button>
-						<button class="btn btn-outline-secondary js-sort-limit">期限順</button>
+					<div class="btn-group w-100 sortBtns" id="js-sort">
+						<button class="btn btn-outline-secondary w-50 js-sort-priority">優先度順</button>
+						<button class="btn btn-outline-secondary w-50 js-sort-limit">期限順</button>
 					</div>
 				</div><!-- /.sortArea -->
 				<div>
-					<button class="btn btn-outline-danger" id="js-removeAllItem">全タスク削除</button>
+					<button class="btn btn-outline-danger w-100" id="js-removeAllItem">全タスク削除</button>
 				</div>
 			</div>
 		</div>
-	</div><!-- /.row -->
+	</div><!-- /.mainContainer -->
 
 	<div class="modal" id="js-modal">
 		<div class="modal-dialog modal-lg" role="document">
