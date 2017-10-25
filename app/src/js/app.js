@@ -85,6 +85,22 @@ const TO_DO_APP = () => {
 				break;
 			}
 			return str;
+		},
+
+		/**
+		 * チェックが入ったラジオボタンのvalue値を返す
+		 * @param {NodeList} elements ラジオボタン要素群
+		 */
+		getCheckedRadioValue(elements) {
+			let result;
+			Array.prototype.slice.call(elements).some((item) => {
+				if (item.checked) {
+					result = item.value;
+					return true;
+				}
+				return false;
+			});
+			return result;
 		}
 	};
 
@@ -213,7 +229,7 @@ const TO_DO_APP = () => {
 			e.preventDefault();
 			const task = {
 				content: taskForm.content.value,
-				priority: taskForm.priority.value,
+				priority: utilFunc.getCheckedRadioValue(taskForm.priority),
 				limit: taskForm.limit.value,
 				status: 'open'
 			};
@@ -353,7 +369,7 @@ const TO_DO_APP = () => {
 			return;
 		}
 		const ul = document.createElement('ul');
-		ul.classList = 'm-0 p-0';
+		ul.className = 'm-0 p-0';
 		let html = '';
 
 		dataAll.forEach((dataItem) => {
@@ -520,7 +536,7 @@ const TO_DO_APP = () => {
 				e.preventDefault();
 				const index = modal.editBtnIndex;
 				let content = _form.content.value;
-				const priority = _form.priority.value;
+				const priority = utilFunc.getCheckedRadioValue(_form.priority);
 				const limit = _form.limit.value;
 				if (utilFunc.isBlank(content)) {
 					alert('内容を入力してください');
