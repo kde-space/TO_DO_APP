@@ -707,18 +707,15 @@ const TO_DO_APP = () => {
 			btn.classList.add(classToggleBtn[0]);
 			taskForm.classList.remove(CLASS_ACTIVE);
 			mainContainer.classList.remove(classToggleContainer);
-			//setMainContainerVisibleArea(mainContainer);
 			mainContainer.removeAttribute('style');
 			flgOpen = false;
 		};
 
 		window.addEventListener('resize', () => {
 			if (window.innerWidth > 768 && flgOpen) {
-				console.log(window.innerWidth);
 				closeForm();
 			} else if (window.innerWidth <= 767 && flgOpen) {
 				setMainContainerVisibleArea();
-				console.log(window.innerWidth);
 			}
 		});
 
