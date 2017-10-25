@@ -368,26 +368,26 @@ const TO_DO_APP = () => {
 					<div class="py-1 px-3">
 						<p class="font-weight-bold my-0 taskContent">${utilFunc.escapeHtml(txt)}</p>
 					</div>
-					<div class="taskStatus small">
+					<div class="taskStatus px-3 small">
 						<div class="row justify-content-between align-items-center py-1 px-3">
-							<div class="col-auto row">
-								<dl class="col-auto mb-0">
+							<div class="">
+								<dl class="d-inline-block mb-0 mr-3">
 									<dt class="d-inline-block">優先度</dt>
 									<dd class="d-inline-block">${utilFunc.getPriorityStr(+dataItem.priority)}</dd>
 								</dl>
 								${dataItem.limit ? `
-								<dl class="col-auto mb-0">
+								<dl class="d-inline-block mb-0">
 									<dt class="d-inline-block">期限</dt>
-									<dd class="d-inline-block">${dataItem.limit}<span class="ml-3">【${htmlAgainstlimit}】</span></dd>
+									<dd class="d-inline-block">${dataItem.limit}<span class="ml-1">【${htmlAgainstlimit}】</span></dd>
 								</dl>
 								` : ''}
 							</div>
-							<div class="col-auto">
+							<div class="">
 								<ul class="list-inline">
 									<li class="list-inline-item">
 										<label class="custom-control custom-checkbox">
 											<input type="checkbox" class="custom-control-input js-completeItem" ${dataItem.status === 'complete' ? 'checked' : ''}>
-											<span class="custom-control-indicator"></span>
+											<span class="custom-control-indicator border border-secondary"></span>
 											<span class="custom-control-description">完了</span>
 										</label>
 									</li>
