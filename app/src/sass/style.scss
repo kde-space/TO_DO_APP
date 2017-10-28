@@ -66,6 +66,10 @@ form[name="taskForm"] {
 	}
 }
 
+.taskFormContainer {
+	backface-visibility: hidden;
+}
+
 %pointer {
 	cursor: pointer;
 }
@@ -73,7 +77,6 @@ form[name="taskForm"] {
 .btn {
 	@extend %pointer;
 }
-
 label {
 	@extend %pointer;
 }
