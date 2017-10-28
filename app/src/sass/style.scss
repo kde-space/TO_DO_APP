@@ -67,12 +67,22 @@ form[name="taskForm"] {
 }
 
 .taskFormContainer {
-	position: fixed;
-	bottom: 0;
-	left: 0;
-	width: 100%;
-	z-index: 1000000;
 	backface-visibility: hidden;
+}
+
+@media screen and (max-width: 768px) {
+    html, body {
+        -webkit-overflow-scrolling: touch !important;
+        overflow: auto;
+        height: 100%;
+    }
+}
+@media screen and (max-width: 768px) {
+    body {
+        position: relative;
+        overflow-x: hidden;
+        min-height: 100%;
+    }
 }
 
 %pointer {
