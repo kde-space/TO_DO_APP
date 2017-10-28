@@ -660,7 +660,7 @@ const TO_DO_APP = () => {
 		if (lStorage.app && lStorage.app !== '[]') {
 			model.setItem('all', JSON.parse(lStorage.app));
 		} else {
-			showInfo('<div class="alert alert-info" role="alert">ページ下部のフォームからタスクを入力してください</div>');
+			showInfo('<div class="alert alert-info" role="alert">下記フォームからタスクを入力してください</div>');
 		}
 	};
 
@@ -673,76 +673,76 @@ const TO_DO_APP = () => {
 		});
 	};
 
-	const setToggleShowTaskform = () => {
-		const btn = document.getElementById('js-showTaskformBtn');
-		const mainContainer = document.querySelector('.mainContainer');
-		if (!btn) {
-			return;
-		}
-		let flgOpen = false;
-		const classToggleBtn = ['btn-primary', 'btn-secondary'];
-		const classToggleContainer = 'is-formOpen';
-		const textBtnBefore = btn.textContent;
-		const textBtnAfter = 'フォームを隠す';
-		const CLASS_ACTIVE = 'js-active';
+	// const setToggleShowTaskform = () => {
+	// 	const btn = document.getElementById('js-showTaskformBtn');
+	// 	const mainContainer = document.querySelector('.mainContainer');
+	// 	if (!btn) {
+	// 		return;
+	// 	}
+	// 	let flgOpen = false;
+	// 	const classToggleBtn = ['btn-primary', 'btn-secondary'];
+	// 	const classToggleContainer = 'is-formOpen';
+	// 	const textBtnBefore = btn.textContent;
+	// 	const textBtnAfter = 'フォームを隠す';
+	// 	const CLASS_ACTIVE = 'js-active';
 
-		/**
-		 * フォームの高さに合わせて表示領域を確保
-		 * @return {Function} 高さに合わせて表示領域調整
-		 */
-		const setMainContainerVisibleArea = () => {
-			const target = mainContainer;
-			const container = document.querySelector('.taskFormContainer');
-			if (!target || !container) {
-				return null;
-			}
-			let containerHeight = 0;
-			const changeContainerPaddingB = (() => {
-				containerHeight = container.clientHeight;
-				target.style.paddingBottom = `${containerHeight + 30}px`;
-			})();
-			return changeContainerPaddingB;
-		};
+	// 	/**
+	// 	 * フォームの高さに合わせて表示領域を確保
+	// 	 * @return {Function} 高さに合わせて表示領域調整
+	// 	 */
+	// 	const setMainContainerVisibleArea = () => {
+	// 		const target = mainContainer;
+	// 		const container = document.querySelector('.taskFormContainer');
+	// 		if (!target || !container) {
+	// 			return null;
+	// 		}
+	// 		let containerHeight = 0;
+	// 		const changeContainerPaddingB = (() => {
+	// 			containerHeight = container.clientHeight;
+	// 			target.style.paddingBottom = `${containerHeight + 30}px`;
+	// 		})();
+	// 		return changeContainerPaddingB;
+	// 	};
 
-		/**
-		 * フォーム表示
-		 */
-		const showForm = () => {
-			btn.textContent = textBtnAfter;
-			btn.classList.remove(classToggleBtn[0]);
-			btn.classList.add(classToggleBtn[1]);
-			taskForm.classList.add(CLASS_ACTIVE);
-			mainContainer.classList.add(classToggleContainer);
-			setMainContainerVisibleArea();
-			flgOpen = true;
-		};
+	// 	/**
+	// 	 * フォーム表示
+	// 	 */
+	// 	const showForm = () => {
+	// 		btn.textContent = textBtnAfter;
+	// 		btn.classList.remove(classToggleBtn[0]);
+	// 		btn.classList.add(classToggleBtn[1]);
+	// 		taskForm.classList.add(CLASS_ACTIVE);
+	// 		mainContainer.classList.add(classToggleContainer);
+	// 		setMainContainerVisibleArea();
+	// 		flgOpen = true;
+	// 	};
 
-		/**
-		 * フォーム非表示
-		 */
-		const closeForm = () => {
-			btn.textContent = textBtnBefore;
-			btn.classList.remove(classToggleBtn[1]);
-			btn.classList.add(classToggleBtn[0]);
-			taskForm.classList.remove(CLASS_ACTIVE);
-			mainContainer.classList.remove(classToggleContainer);
-			mainContainer.removeAttribute('style');
-			flgOpen = false;
-		};
+	// 	/**
+	// 	 * フォーム非表示
+	// 	 */
+	// 	const closeForm = () => {
+	// 		btn.textContent = textBtnBefore;
+	// 		btn.classList.remove(classToggleBtn[1]);
+	// 		btn.classList.add(classToggleBtn[0]);
+	// 		taskForm.classList.remove(CLASS_ACTIVE);
+	// 		mainContainer.classList.remove(classToggleContainer);
+	// 		mainContainer.removeAttribute('style');
+	// 		flgOpen = false;
+	// 	};
 
-		window.addEventListener('resize', () => {
-			if (window.innerWidth > 768 && flgOpen) {
-				closeForm();
-			} else if (window.innerWidth <= 767 && flgOpen) {
-				setMainContainerVisibleArea();
-			}
-		});
+	// 	window.addEventListener('resize', () => {
+	// 		if (window.innerWidth > 768 && flgOpen) {
+	// 			closeForm();
+	// 		} else if (window.innerWidth <= 767 && flgOpen) {
+	// 			setMainContainerVisibleArea();
+	// 		}
+	// 	});
 
-		btn.addEventListener('click', (e) => {
-			e.preventDefault();
-			flgOpen ? closeForm() : showForm();
-		});
-	};
+	// 	btn.addEventListener('click', (e) => {
+	// 		e.preventDefault();
+	// 		flgOpen ? closeForm() : showForm();
+	// 	});
+	// };
 
 	/**
 	 * 実行
@@ -758,7 +758,7 @@ const TO_DO_APP = () => {
 		setDeleteCompleteTask();
 		setSortTask();
 		setDeleteAllTask();
-		setToggleShowTaskform();
+		// setToggleShowTaskform();
 	};
 
 	start();
