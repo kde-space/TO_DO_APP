@@ -245,15 +245,15 @@ const TO_DO_APP = () => {
 	};
 
 	/**
-	 * フォームのinput[type="date"]のmin属性に今日の日付を設定
+	 * フォームのinput[type="date"]のvalue属性に今日の日付を設定
 	 */
-	const setInputDateMin = () => {
+	const setInputDateValue = () => {
 		const dateInput = document.querySelectorAll('input[type="date"]');
 		if (dateInput.legnth < 1) {
 			return;
 		}
 		Array.prototype.slice.call(dateInput).forEach((input) => {
-			input.setAttribute('min', formattedToday);
+			input.value = formattedToday;
 		});
 	};
 
@@ -343,7 +343,7 @@ const TO_DO_APP = () => {
 			return '期限が過ぎています!!';
 		}
 		case 'thatday': {
-			return '期限当日です!';
+			return '今日が期限です!';
 		}
 		case 'notyet': {
 			if (!endDateObj || !nowDateObj) {
@@ -747,7 +747,7 @@ const TO_DO_APP = () => {
 	const start = () => {
 		addListeners();
 		showFirstMainContent();
-		setInputDateMin();
+		setInputDateValue();
 
 		// フォームのイベント登録
 		addFormEvent();
