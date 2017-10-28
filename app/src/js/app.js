@@ -222,9 +222,23 @@ const TO_DO_APP = () => {
 	};
 
 	/**
+	 * フォームのinput[type="date"]のvalue属性に今日の日付を設定
+	 */
+	const setInputDateValue = (() => {
+		const dateInput = taskForm.querySelector('input[type="date"]');
+		const setInput = () => {
+			dateInput.value = formattedToday;
+		};
+		if (!dateInput) {
+			return false;
+		}
+		return setInput;
+	})();
+
+	/**
 	 * フォームのイベント登録
 	 */
-	const addFormEvent = () => {
+	const setFormEvent = () => {
 		taskForm.addEventListener('submit', (e) => {
 			e.preventDefault();
 			const task = {
@@ -241,21 +255,10 @@ const TO_DO_APP = () => {
 			task.content = task.content.trim();
 			model.setItem('add', task);
 			taskForm.reset();
+			setInputDateValue();
 		});
 	};
 
-	/**
-	 * フォームのinput[type="date"]のvalue属性に今日の日付を設定
-	 */
-	const setInputDateValue = () => {
-		const dateInput = document.querySelectorAll('input[type="date"]');
-		if (dateInput.legnth < 1) {
-			return;
-		}
-		Array.prototype.slice.call(dateInput).forEach((input) => {
-			input.value = formattedToday;
-		});
-	};
 
 	/**
 	 * 全データから各値をまとめたオブジェクト
@@ -750,7 +753,7 @@ const TO_DO_APP = () => {
 		setInputDateValue();
 
 		// フォームのイベント登録
-		addFormEvent();
+		setFormEvent();
 		statusData.init();
 		setDeleteCompleteTask();
 		setSortTask();
