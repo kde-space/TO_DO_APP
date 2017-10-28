@@ -369,7 +369,7 @@ const TO_DO_APP = () => {
 			return;
 		}
 		const ul = document.createElement('ul');
-		ul.className = 'm-0 p-0';
+		ul.className = 'mb-4 p-0';
 		let html = '';
 
 		dataAll.forEach((dataItem) => {

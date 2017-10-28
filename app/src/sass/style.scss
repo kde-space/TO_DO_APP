@@ -48,42 +48,49 @@
 	}
 }
 
-form[name="taskForm"] {
-	@media (max-width: 767px) {
-		display: none;
-	}
-}
-
 .mainContainer {
-	@media (max-width: 991px) {
-		padding-bottom: 200px;
-	}
-	@media (max-width: 767px) {
-		padding-bottom: 100px;
-	}
-	@media (min-width: 992px) {
-		padding-bottom: 150px;
-	}
+	padding-bottom: 50px;
 }
 
 .taskFormContainer {
-	backface-visibility: hidden;
+	border-radius: .25rem;
 }
+// form[name="taskForm"] {
+// 	@media (max-width: 767px) {
+// 		display: none;
+// 	}
+// }
 
-@media screen and (max-width: 768px) {
-    html, body {
-        -webkit-overflow-scrolling: touch !important;
-        overflow: auto;
-        height: 100%;
-    }
-}
-@media screen and (max-width: 768px) {
-    body {
-        position: relative;
-        overflow-x: hidden;
-        min-height: 100%;
-    }
-}
+// .mainContainer {
+// 	@media (max-width: 991px) {
+// 		padding-bottom: 200px;
+// 	}
+// 	@media (max-width: 767px) {
+// 		padding-bottom: 100px;
+// 	}
+// 	@media (min-width: 992px) {
+// 		padding-bottom: 150px;
+// 	}
+// }
+
+// .taskFormContainer {
+// 	backface-visibility: hidden;
+// }
+
+// @media screen and (max-width: 768px) {
+//     html, body {
+//         -webkit-overflow-scrolling: touch !important;
+//         overflow: auto;
+//         height: 100%;
+//     }
+// }
+// @media screen and (max-width: 768px) {
+//     body {
+//         position: relative;
+//         overflow-x: hidden;
+//         min-height: 100%;
+//     }
+// }
 
 %pointer {
 	cursor: pointer;
