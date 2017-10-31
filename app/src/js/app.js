@@ -106,9 +106,62 @@ const TO_DO_APP = () => {
 
 	const formattedToday = `${now.getFullYear()}-${utilFunc.addZeroPadding(now.getMonth() + 1, 2)}-${utilFunc.addZeroPadding(now.getDate(), 2)}`;
 
-	const showInfo = (html) => {
-		stage.innerHTML = html;
-	};
+	/**
+	 * ユーザーエージェント判別用モジュール
+	 */
+	const checkUserAgent = (() => {
+		const ua = navigator.userAgent.toLowerCase();
+		const isIE = (ua.includes('msie') && !ua.includes('opera')) || ua.includes('trident');
+		const isEdge = ua.includes('edge');
+		const isChrome = ua.includes('chrome') && !ua.includes('edge');
+		const isFirefox = ua.includes('firefox');
+		const isSafari = ua.includes('safari') && !ua.includes('chrome');
+		const isOpera = ua.includes('opera');
+
+		/**
+		 * デバイスの種類を判定
+		 * @returns {String} デバイスを表す文字列
+		 */
+		const getDevice = () => {
+			if (ua.includes('iphone') || ua.includes('ipod') || (ua.includes('android') && ua.includes('mobile'))) {
+				return 'sp';
+			} else if (ua.includes('ipad') || ua.includes('android')) {
+				return 'tablet';
+			}
+			return 'pc';
+		};
+
+		/**
+		 * ブラウザ判定の結果により注意文言を取得
+		 * @return {Boolean | String}
+		 */
+		const getAlertMessage = () => {
+			const device = getDevice();
+			if (device !== 'pc') {
+				return false;
+			}
+			if (!isEdge && !isChrome) {
+				return '<div class="alert alert-danger" role="alert">お使いのブラウザでは正しく動作しない可能性があります。<br>ChromeもしくはEdgeでご覧ください。</div>';
+			}
+			return false;
+		};
+
+		return {
+			ua,
+			isIE,
+			isEdge,
+			isChrome,
+			isFirefox,
+			isSafari,
+			isOpera,
+			getDevice,
+			getAlertMessage
+		};
+	})();
+
+	if (checkUserAgent.isIE) {
+		stage.innerHTML = '<div class="alert alert-danger" role="alert">お使いのブラウザでは動作しません。<br>ChromeもしくはEdgeでご覧ください。</div>';
+	}
 
 	// Model管理
 	const model = {
@@ -368,7 +421,7 @@ const TO_DO_APP = () => {
 		// 全データ
 		const dataAll = model.getItem();
 		if (dataAll.length <= 0) {
-			showInfo('<div class="alert alert-info" role="alert">ページ下部のフォームからタスクを入力してください</div>');
+			stage.innerHTML = '<div class="alert alert-info" role="alert">下記フォームからタスクを入力してください</div>';
 			return;
 		}
 		const ul = document.createElement('ul');
@@ -602,7 +655,8 @@ const TO_DO_APP = () => {
 		if (!deleteBtn) {
 			return;
 		}
-		deleteBtn.addEventListener('click', () => {
+		deleteBtn.addEventListener('click', (e) => {
+			e.preventDefault();
 			model.removeCompletedItem();
 		});
 	};
@@ -660,12 +714,16 @@ const TO_DO_APP = () => {
 		if (lStorage.app && lStorage.app !== '[]') {
 			model.setItem('all', JSON.parse(lStorage.app));
 		} else {
-			showInfo('<div class="alert alert-info" role="alert">下記フォームからタスクを入力してください</div>');
+			let html = checkUserAgent.getAlertMessage() ? checkUserAgent.getAlertMessage() : '';
+			html += '<div class="alert alert-info" role="alert">下記フォームからタスクを入力してください</div>';
+			stage.innerHTML = html;
 		}
 	};
 
-	const addListeners = () => {
-		// カスタムイベントのリスナー登録
+	/**
+	 * ディスパッチャーへのイベント登録
+	 */
+	const setDispatchEvent = () => {
 		model.dispatcher.addEventListener('dataChange', () => {
 			statusData.init();
 			render();
@@ -748,7 +806,7 @@ const TO_DO_APP = () => {
 	 * 実行
 	 */
 	const start = () => {
-		addListeners();
+		setDispatchEvent();
 		showFirstMainContent();
 		setInputDateValue();
 
@@ -758,7 +816,6 @@ const TO_DO_APP = () => {
 		setDeleteCompleteTask();
 		setSortTask();
 		setDeleteAllTask();
-		// setToggleShowTaskform();
 	};
 
 	start();
