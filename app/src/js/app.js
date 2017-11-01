@@ -68,26 +68,6 @@ const TO_DO_APP = () => {
 		},
 
 		/**
-		 * 優先度を示す文字列を表示用に変換
-		 * @param {Number} priority 優先度を示す数値
-		 */
-		getPriorityStr(priority) {
-			let str = '';
-			switch (priority) {
-			case 3:
-				str = '高';
-				break;
-			case 1:
-				str = '低';
-				break;
-			default:
-				str = '中';
-				break;
-			}
-			return str;
-		},
-
-		/**
 		 * チェックが入ったラジオボタンのvalue値を返す
 		 * @param {NodeList} elements ラジオボタン要素群
 		 */
@@ -118,6 +98,7 @@ const TO_DO_APP = () => {
 		const isSafari = ua.includes('safari') && !ua.includes('chrome');
 		const isOpera = ua.includes('opera');
 
+		const getUa = () => ua;
 		/**
 		 * デバイスの種類を判定
 		 * @returns {String} デバイスを表す文字列
@@ -147,7 +128,7 @@ const TO_DO_APP = () => {
 		};
 
 		return {
-			ua,
+			getUa,
 			isIE,
 			isEdge,
 			isChrome,
@@ -415,6 +396,26 @@ const TO_DO_APP = () => {
 	};
 
 	/**
+	 * 優先度を示す文字列を表示用に変換
+	 * @param {Number} priority 優先度を示す数値
+	 */
+	const getPriorityStr = (priority) => {
+		let str = '';
+		switch (priority) {
+		case 3:
+			str = '高';
+			break;
+		case 1:
+			str = '低';
+			break;
+		default:
+			str = '中';
+			break;
+		}
+		return str;
+	};
+
+	/**
 	 * タスクの描画
 	 */
 	const renderTask = () => {
@@ -445,7 +446,7 @@ const TO_DO_APP = () => {
 							<div class="">
 								<dl class="d-inline-block mb-0 mr-3">
 									<dt class="d-inline-block">優先度</dt>
-									<dd class="d-inline-block">${utilFunc.getPriorityStr(+dataItem.priority)}</dd>
+									<dd class="d-inline-block">${getPriorityStr(+dataItem.priority)}</dd>
 								</dl>
 								${dataItem.limit ? `
 								<dl class="d-inline-block mb-0">
@@ -700,7 +701,7 @@ const TO_DO_APP = () => {
 	};
 
 	/**
-	 * 画面の描画
+	 * 画面の描画アップデート
 	 */
 	const render = () => {
 		renderTask();
@@ -710,6 +711,9 @@ const TO_DO_APP = () => {
 		addEditEvent();
 	};
 
+	/**
+	 * メインコンテンツエリアの初期表示
+	 */
 	const showFirstMainContent = () => {
 		if (lStorage.app && lStorage.app !== '[]') {
 			model.setItem('all', JSON.parse(lStorage.app));
@@ -731,77 +735,6 @@ const TO_DO_APP = () => {
 		});
 	};
 
-	// const setToggleShowTaskform = () => {
-	// 	const btn = document.getElementById('js-showTaskformBtn');
-	// 	const mainContainer = document.querySelector('.mainContainer');
-	// 	if (!btn) {
-	// 		return;
-	// 	}
-	// 	let flgOpen = false;
-	// 	const classToggleBtn = ['btn-primary', 'btn-secondary'];
-	// 	const classToggleContainer = 'is-formOpen';
-	// 	const textBtnBefore = btn.textContent;
-	// 	const textBtnAfter = 'フォームを隠す';
-	// 	const CLASS_ACTIVE = 'js-active';
-
-	// 	/**
-	// 	 * フォームの高さに合わせて表示領域を確保
-	// 	 * @return {Function} 高さに合わせて表示領域調整
-	// 	 */
-	// 	const setMainContainerVisibleArea = () => {
-	// 		const target = mainContainer;
-	// 		const container = document.querySelector('.taskFormContainer');
-	// 		if (!target || !container) {
-	// 			return null;
-	// 		}
-	// 		let containerHeight = 0;
-	// 		const changeContainerPaddingB = (() => {
-	// 			containerHeight = container.clientHeight;
-	// 			target.style.paddingBottom = `${containerHeight + 30}px`;
-	// 		})();
-	// 		return changeContainerPaddingB;
-	// 	};
-
-	// 	/**
-	// 	 * フォーム表示
-	// 	 */
-	// 	const showForm = () => {
-	// 		btn.textContent = textBtnAfter;
-	// 		btn.classList.remove(classToggleBtn[0]);
-	// 		btn.classList.add(classToggleBtn[1]);
-	// 		taskForm.classList.add(CLASS_ACTIVE);
-	// 		mainContainer.classList.add(classToggleContainer);
-	// 		setMainContainerVisibleArea();
-	// 		flgOpen = true;
-	// 	};
-
-	// 	/**
-	// 	 * フォーム非表示
-	// 	 */
-	// 	const closeForm = () => {
-	// 		btn.textContent = textBtnBefore;
-	// 		btn.classList.remove(classToggleBtn[1]);
-	// 		btn.classList.add(classToggleBtn[0]);
-	// 		taskForm.classList.remove(CLASS_ACTIVE);
-	// 		mainContainer.classList.remove(classToggleContainer);
-	// 		mainContainer.removeAttribute('style');
-	// 		flgOpen = false;
-	// 	};
-
-	// 	window.addEventListener('resize', () => {
-	// 		if (window.innerWidth > 768 && flgOpen) {
-	// 			closeForm();
-	// 		} else if (window.innerWidth <= 767 && flgOpen) {
-	// 			setMainContainerVisibleArea();
-	// 		}
-	// 	});
-
-	// 	btn.addEventListener('click', (e) => {
-	// 		e.preventDefault();
-	// 		flgOpen ? closeForm() : showForm();
-	// 	});
-	// };
-
 	/**
 	 * 実行
 	 */
@@ -809,15 +742,12 @@ const TO_DO_APP = () => {
 		setDispatchEvent();
 		showFirstMainContent();
 		setInputDateValue();
-
-		// フォームのイベント登録
 		setFormEvent();
 		statusData.init();
 		setDeleteCompleteTask();
 		setSortTask();
 		setDeleteAllTask();
 	};
-
 	start();
 };
 
