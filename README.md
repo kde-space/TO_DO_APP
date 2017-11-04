@@ -1,3 +1,5 @@
+![result](https://github.com/kde-space/TO_DO_APP/blob/images/demo.gif)
+
 ## 概要
 JavaScript設計の学習のために作成した簡易的なTO DO アプリです。  
 https://kde-space.github.io/TO_DO_APP/index.html
@@ -5,7 +7,8 @@ https://kde-space.github.io/TO_DO_APP/index.html
 ## 機能
 - タスクごとに優先度（3段階）、期限を設定可
 - タスクに設定した期限と、本日とを比較して状況を表示
-- タスクをステータスに応じて各々色分け
+- タスクをステータスに応じて各々色分け  
+![result](https://github.com/kde-space/TO_DO_APP/blob/images/task_color.PNG)
 - 入力したタスクの編集可
 - 完了済みのタスク、全てのタスクを一括削除可
 - 並べ替え可（優先度順 あるいは 期限順）
