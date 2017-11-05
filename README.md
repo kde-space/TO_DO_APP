@@ -8,7 +8,13 @@ https://kde-space.github.io/TO_DO_APP/index.html
 - タスクごとに優先度（3段階）、期限を設定可
 - タスクに設定した期限と、本日とを比較して状況を表示
 - タスクをステータスに応じて各々色分け  
-![result](https://github.com/kde-space/TO_DO_APP/blob/images/task_color.PNG)
+![result](https://github.com/kde-space/TO_DO_APP/blob/images/task_color.PNG) 
+    - 優先度「高」：黄
+    - 優先度「中」：白
+    - 優先度「低」：青
+    - 期限超過：赤
+    - 完了済み：グレー
+
 - 入力したタスクの編集可
 - 完了済みのタスク、全てのタスクを一括削除可
 - 並べ替え可（優先度順 あるいは 期限順）
