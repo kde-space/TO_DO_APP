@@ -90,23 +90,23 @@ const TO_DO_APP = () => {
 	 * ユーザーエージェント判別用モジュール
 	 */
 	const checkUserAgent = (() => {
-		const ua = navigator.userAgent.toLowerCase();
-		const isIE = (ua.includes('msie') && !ua.includes('opera')) || ua.includes('trident');
-		const isEdge = ua.includes('edge');
-		const isChrome = ua.includes('chrome') && !ua.includes('edge');
-		const isFirefox = ua.includes('firefox');
-		const isSafari = ua.includes('safari') && !ua.includes('chrome');
-		const isOpera = ua.includes('opera');
+		const _ua = navigator.userAgent.toLowerCase();
+		const isIE = (_ua.includes('msie') && !_ua.includes('opera')) || _ua.includes('trident');
+		const isEdge = _ua.includes('edge');
+		const isChrome = _ua.includes('chrome') && !_ua.includes('edge');
+		const isFirefox = _ua.includes('firefox');
+		const isSafari = _ua.includes('safari') && !_ua.includes('chrome');
+		const isOpera = _ua.includes('opera');
 
-		const getUa = () => ua;
+		const getUa = () => _ua;
 		/**
 		 * デバイスの種類を判定
 		 * @returns {String} デバイスを表す文字列
 		 */
 		const getDevice = () => {
-			if (ua.includes('iphone') || ua.includes('ipod') || (ua.includes('android') && ua.includes('mobile'))) {
+			if (_ua.includes('iphone') || _ua.includes('ipod') || (_ua.includes('android') && _ua.includes('mobile'))) {
 				return 'sp';
-			} else if (ua.includes('ipad') || ua.includes('android')) {
+			} else if (_ua.includes('ipad') || _ua.includes('android')) {
 				return 'tablet';
 			}
 			return 'pc';
@@ -273,24 +273,44 @@ const TO_DO_APP = () => {
 	 * フォームのイベント登録
 	 */
 	const setFormEvent = () => {
-		taskForm.addEventListener('submit', (e) => {
-			e.preventDefault();
-			const task = {
-				content: taskForm.content.value,
-				priority: utilFunc.getCheckedRadioValue(taskForm.priority),
-				limit: taskForm.limit.value,
-				status: 'open'
-			};
-			if (utilFunc.isBlank(task.content)) {
-				alert('内容を入力してください');
-				taskForm.reset();
-				return;
-			}
-			task.content = task.content.trim();
-			model.setItem('add', task);
+		const clearForm = () => {
 			taskForm.reset();
 			setInputDateValue();
-		});
+		};
+
+		const setClear = () => {
+			const btnClear = taskForm.querySelector('input[type="reset"]');
+			if (!btnClear) {
+				return;
+			}
+			btnClear.addEventListener('click', (e) => {
+				e.preventDefault();
+				clearForm();
+			});
+		};
+
+		const setAdd = () => {
+			taskForm.addEventListener('submit', (e) => {
+				e.preventDefault();
+				const task = {
+					content: taskForm.content.value,
+					priority: utilFunc.getCheckedRadioValue(taskForm.priority),
+					limit: taskForm.limit.value,
+					status: 'open'
+				};
+				if (utilFunc.isBlank(task.content)) {
+					alert('内容を入力してください');
+					taskForm.reset();
+					return;
+				}
+				task.content = task.content.trim();
+				model.setItem('add', task);
+				clearForm();
+			});
+		};
+
+		setClear();
+		setAdd();
 	};
 
 	/**
@@ -519,7 +539,7 @@ const TO_DO_APP = () => {
 	/**
 	 * 完了ボタンへのイベント登録
 	 */
-	const addCompleteEvent = () => {
+	const setCompleteEvent = () => {
 		const allcompleteInputs = document.querySelectorAll('.js-completeItem');
 		Array.prototype.slice.call(allcompleteInputs).forEach((completeInput, index) => {
 			completeInput.addEventListener('click', (e) => {
@@ -536,6 +556,8 @@ const TO_DO_APP = () => {
 		const _modalBg = _wrapper.querySelector('.modal-bg');
 		const _modalCloseBtn = _wrapper.querySelector('.js-modal-close');
 		const _form = document.forms['js-taskEdit'];
+		const _formInputText = _form.querySelector('input[type="text"]');
+		const _formInputDate = _form.querySelector('input[type="date"]');
 
 		/**
 		 * モーダルを開く
@@ -559,8 +581,8 @@ const TO_DO_APP = () => {
 		 */
 		const initForm = (index) => {
 			const itemState = model.getItem(index);
-			_form.querySelector('input[type="text"]').value = itemState.content;
-			_form.querySelector('input[type="date"]').value = itemState.limit;
+			_formInputText.value = itemState.content;
+			_formInputDate.value = itemState.limit;
 			Array.prototype.slice.call(_form.querySelectorAll('input[type="radio"]')).forEach((item) => {
 				if (+item.value === +itemState.priority) {
 					item.checked = true;
@@ -588,21 +610,37 @@ const TO_DO_APP = () => {
 		 * @private
 		 */
 		const _setEditFormEvent = () => {
-			_form.addEventListener('submit', (e) => {
-				e.preventDefault();
-				const index = modal.editBtnIndex;
-				let content = _form.content.value;
-				const priority = utilFunc.getCheckedRadioValue(_form.priority);
-				const limit = _form.limit.value;
-				if (utilFunc.isBlank(content)) {
-					alert('内容を入力してください');
+			const setClear = () => {
+				const btnClear = _form.querySelector('input[type="reset"]');
+				if (!btnClear) {
 					return;
 				}
-				content = content.trim();
-				model.setItem('edit', [index, content, priority, limit]);
-				// モーダル閉じる
-				close();
-			});
+				btnClear.addEventListener('click', (e) => {
+					e.preventDefault();
+					_form.reset();
+					_formInputDate.value = formattedToday;
+				});
+			};
+
+			const setAdd = () => {
+				_form.addEventListener('submit', (e) => {
+					e.preventDefault();
+					const index = modal.editBtnIndex;
+					let content = _form.content.value;
+					const priority = utilFunc.getCheckedRadioValue(_form.priority);
+					const limit = _form.limit.value;
+					if (utilFunc.isBlank(content)) {
+						alert('内容を入力してください');
+						return;
+					}
+					content = content.trim();
+					model.setItem('edit', [index, content, priority, limit]);
+					close();
+				});
+			};
+
+			setClear();
+			setAdd();
 		};
 
 		/**
@@ -622,7 +660,6 @@ const TO_DO_APP = () => {
 			_setCloseEvent();
 			_setEditFormEvent();
 		};
-
 		_init();
 
 		return {
@@ -636,7 +673,7 @@ const TO_DO_APP = () => {
 	/**
 	 * 編集ボタンへのイベント登録
 	 */
-	const addEditEvent = () => {
+	const setEditEvent = () => {
 		const allEditBtn = document.querySelectorAll('.js-editItem');
 		Array.prototype.slice.call(allEditBtn).forEach((editBtn, index) => {
 			editBtn.addEventListener('click', () => {
@@ -706,8 +743,8 @@ const TO_DO_APP = () => {
 		renderTask();
 		renderStatus();
 		toggleShowTaskDeleteBtn();
-		addCompleteEvent();
-		addEditEvent();
+		setCompleteEvent();
+		setEditEvent();
 	};
 
 	/**
